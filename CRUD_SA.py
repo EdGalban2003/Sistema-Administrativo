@@ -51,8 +51,8 @@ def eliminar_cliente(id_cliente):
     cursor.execute(query, (id_cliente,))
     conexion.commit()
     print("Cliente eliminado con éxito.")
-#######################################
-
+#...........######################################
+.
 
 #######################################
 #CURD PARA LA TABLA PROVEEDORES
@@ -95,6 +95,11 @@ def eliminar_proveedor(id_proveedor):
     conexion.commit()
     print("Proveedor eliminado con éxito.")
 
+
+#######################################
+#CURD PARA LA TABLA PRODUCTOS
+#######################################
+#
 # Función para crear un producto
 def crear_producto(nombre, codigo, detalle, cantidad, precio_venta, precio_costo, fecha_ingreso, descuento, promocion):
     query = "INSERT INTO Productos (Nombre_Producto, Codigo_Producto, Detalle_Producto, Cantidad_Producto, Precio_Venta, Precio_Costo, Fecha_Ingreso, Descuento, Promocion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
