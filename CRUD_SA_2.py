@@ -1,41 +1,125 @@
 import mysql.connector
 
-# Conectarse a la base de datos
-conexion = mysql.connector.connect(
-    host="tu_host",
-    user="tu_usuario",
-    password="tu_contraseña",
-    database="tu_base_de_datos"
-)
+try:
+    # Intentar conectar a la base de datos
+    conexion = mysql.connector.connect(
+        host="localhost",
+        user="Admin",
+        password="xztj-ARgQGavgh@K",
+        database="sistema_administrativo"
+    )
 
-cursor = conexion.cursor()
+    # Si la conexión es exitosa, muestra un mensaje de éxito
+    print("Conexión exitosa a la base de datos")
+    
+    # Luego puedes realizar operaciones en la base de datos usando 'cursor', si es necesario.
+    cursor = conexion.cursor()
+    # Realiza tus operaciones con la base de datos aquí
 
+except mysql.connector.Error as e:
+    # En caso de error, muestra un mensaje de error
+    print(f"Error al conectar a la base de datos: {e}")
+    
 
 #######################################
 #CURD PARA LA TABLA CLIENTES
 #######################################
-#
+
+
+
+
 # Función para crear un cliente
-def crear_cliente(cedula, nombre, apellido, telefono, correo, direccion):
-    query = "INSERT INTO Clientes (Cedula, Nombre_Cliente, Apellido_Cliente, Telefono_Cliente, Correo_Cliente, Direccion_Cliente) VALUES (%s, %s, %s, %s, %s, %s)"
-    valores = (cedula, nombre, apellido, telefono, correo, direccion)
-    cursor.execute(query, valores)
-    conexion.commit()
-    print("Cliente creado con éxito.")
+def crear_cliente(id_cliente, cedula, nombre, apellido, telefono, correo, direccion):
+    try:
+        query = "INSERT INTO Cliente (ID_Cliente, Cedula_Cliente, Nombre_Cliente, Apellido_Cliente, Telefono_Cliente, Correo_Cliente, Direccion_Cliente) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        valores = (id_cliente, cedula, nombre, apellido, telefono, correo, direccion)
+        cursor.execute(query, valores)
+        conexion.commit()
+        print("Cliente creado con éxito.")
+    except mysql.connector.Error as e:
+        print(f"Error al crear el cliente: {e}")
+
+# # Solicitar datos al usuario desde el terminal
+# id_cliente = input("ID del cliente: ")
+# cedula = input("Cédula del cliente: ")
+# nombre = input("Nombre del cliente: ")
+# apellido = input("Apellido del cliente: ")
+# telefono = input("Teléfono del cliente: ")
+# correo = input("Correo del cliente: ")
+# direccion = input("Dirección del cliente: ")
+
+# # Llamar a la función para crear un cliente
+# crear_cliente(id_cliente, cedula, nombre, apellido, telefono, correo, direccion)
+
+
+
+
 
 # Función para consultar clientes por cédula
 def consultar_cliente_por_cedula(cedula):
-    query = "SELECT * FROM Clientes WHERE Cedula = %s"
-    cursor.execute(query, (cedula,))
-    resultado = cursor.fetchall()
-    return resultado
+    try:
+        query = "SELECT * FROM Cliente WHERE Cedula_Cliente = %s"
+        cursor.execute(query, (cedula,))
+        resultado = cursor.fetchall()
+        return resultado
+    except mysql.connector.Error as e:
+        print(f"Error al consultar cliente por cédula: {e}")
+        return None
+
+# # Solicitar cédula al usuario desde la terminal
+# cedula = input("Introduce la cédula del cliente a consultar: ")
+
+# # Llamar a la función para consultar el cliente por cédula
+# resultado = consultar_cliente_por_cedula(cedula)
+
+# if resultado:
+#     print("Cliente encontrado:")
+#     for row in resultado:
+#         print(f"ID: {row[0]}")
+#         print(f"Cédula: {row[1]}")
+#         print(f"Nombre: {row[2]}")
+#         print(f"Apellido: {row[3]}")
+#         print(f"Teléfono: {row[4]}")
+#         print(f"Correo: {row[5]}")
+#         print(f"Dirección: {row[6]}")
+# else:
+#     print("Cliente no encontrado.")
+
+
+
 
 # Función para consultar clientes por nombre
 def consultar_cliente_por_nombre(nombre):
-    query = "SELECT * FROM Clientes WHERE Nombre_Cliente LIKE %s"
-    cursor.execute(query, (f"%{nombre}%",))
-    resultado = cursor.fetchall()
-    return resultado
+    try:
+        query = "SELECT * FROM Cliente WHERE Nombre_Cliente LIKE %s"
+        cursor.execute(query, (f"%{nombre}%",))
+        resultado = cursor.fetchall()
+        return resultado
+    except mysql.connector.Error as e:
+        print(f"Error al consultar cliente por nombre: {e}")
+        return None
+
+# # Solicitar nombre al usuario desde la terminal
+# nombre = input("Introduce el nombre del cliente a consultar: ")
+
+# # Llamar a la función para consultar el cliente por nombre
+# resultado = consultar_cliente_por_nombre(nombre)
+
+# if resultado:
+#     print("Clientes encontrados:")
+#     for row in resultado:
+#         print(f"ID: {row[0]}")
+#         print(f"Cédula: {row[1]}")
+#         print(f"Nombre: {row[2]}")
+#         print(f"Apellido: {row[3]}")
+#         print(f"Teléfono: {row[4]}")
+#         print(f"Correo: {row[5]}")
+#         print(f"Dirección: {row[6]}")
+# else:
+#     print("No se encontraron clientes con ese nombre.")
+
+
+
 
 # Función para actualizar un cliente por su ID
 def actualizar_cliente(id_cliente, nombre, apellido, telefono, correo, direccion):
@@ -51,8 +135,7 @@ def eliminar_cliente(id_cliente):
     cursor.execute(query, (id_cliente,))
     conexion.commit()
     print("Cliente eliminado con éxito.")
-#...........######################################
-.
+############################################
 
 #######################################
 #CURD PARA LA TABLA PROVEEDORES
