@@ -189,14 +189,51 @@ def eliminar_cliente_por_cedula(cedula):
 #######################################
 #CURD PARA LA TABLA PROVEEDORES
 #######################################
-#
+
+
+
+
+# Función para verificar si un proveedor existe por su número de documento
+def proveedor_existe_por_numero_documento(numero_documento):
+    try:
+        query = "SELECT COUNT(*) FROM Proveedor WHERE Numero_Documento = %s"
+        cursor.execute(query, (numero_documento,))
+        resultado = cursor.fetchone()
+        return resultado[0] > 0
+    except mysql.connector.Error as e:
+        print(f"Error al verificar la existencia del proveedor: {e}")
+        return False
+
+
+
+
 # Función para crear un proveedor
-def crear_proveedor(nombre_comercial, nombre, apellido, tipo_documento, numero_documento, telefono, correo, direccion):
-    query = "INSERT INTO Proveedor (Nombre_Comercial_Proveedor, Nombre_Proveedor, Apellido_Proveedor, Tipo_Documento, Numero_Documento, Telefono_Proveedor, Correo_Proveedor, Direccion_Proveedor) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    valores = (nombre_comercial, nombre, apellido, tipo_documento, numero_documento, telefono, correo, direccion)
-    cursor.execute(query, valores)
-    conexion.commit()
-    print("Proveedor creado con éxito.")
+def crear_proveedor(id_proveedor, nombre_comercial, nombre, apellido, tipo_documento, numero_documento, telefono, correo, direccion):
+    try:
+        query = "INSERT INTO Proveedor (ID_Proveedor, Nombre_Comercial_Proveedor, Nombre_Proveedor, Apellido_Proveedor, Tipo_Documento, Numero_Documento, Telefono_Proveedor, Correo_Proveedor, Direccion_Proveedor) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        valores = (id_proveedor, nombre_comercial, nombre, apellido, tipo_documento, numero_documento, telefono, correo, direccion)
+        cursor.execute(query, valores)
+        conexion.commit()
+        print("Proveedor creado con éxito.")
+    except mysql.connector.Error as e:
+        print(f"Error al crear el proveedor: {e}")
+
+# Solicitar datos al usuario desde el terminal para crear un proveedor
+id_proveedor = input("ID del proveedor: ")
+nombre_comercial = input("Nombre Comercial del proveedor: ")
+nombre = input("Nombre del proveedor: ")
+apellido = input("Apellido del proveedor: ")
+tipo_documento = input("Tipo de documento del proveedor: ")
+numero_documento = input("Número de documento del proveedor: ")
+telefono = input("Teléfono del proveedor: ")
+correo = input("Correo del proveedor: ")
+direccion = input("Dirección del proveedor: ")
+
+# Llamar a la función para crear un proveedor
+crear_proveedor(id_proveedor, nombre_comercial, nombre, apellido, tipo_documento, numero_documento, telefono, correo, direccion)
+
+
+
 
 # Función para consultar proveedores por nombre comercial
 def consultar_proveedor_por_nombre_comercial(nombre_comercial):
