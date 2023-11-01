@@ -94,16 +94,16 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Sistema_Administrativo`.`Detalle_Factura`
+-- Table `Sistema_Administrativo`.`Detalle_Recibos`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Detalle_Factura` (
-  `ID_Detalle_Factura` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Detalle_Recibos` (
+  `ID_Detalle_Recibos` INT NOT NULL AUTO_INCREMENT,
   `Cantidad` INT NOT NULL,
   `Total_Pago` DECIMAL(10,2) NOT NULL,
   `Productos_ID_Producto` INT NOT NULL,
   `Recibos_ID_Recibo` INT NOT NULL,
   `Recibos_Cliente_ID_Cliente` INT NOT NULL,
-  PRIMARY KEY (`ID_Detalle_Factura`, `Productos_ID_Producto`, `Recibos_ID_Recibo`, `Recibos_Cliente_ID_Cliente`),
+  PRIMARY KEY (`ID_Detalle_Recibos`, `Productos_ID_Producto`, `Recibos_ID_Recibo`, `Recibos_Cliente_ID_Cliente`),
   INDEX `fk_Detalle_Factura_Productos1_idx` (`Productos_ID_Producto` ASC) ,
   INDEX `fk_Detalle_Factura_Recibos1_idx` (`Recibos_ID_Recibo` ASC, `Recibos_Cliente_ID_Cliente` ASC) ,
   CONSTRAINT `fk_Detalle_Factura_Productos1`
