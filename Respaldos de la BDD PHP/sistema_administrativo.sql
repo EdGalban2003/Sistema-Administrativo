@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-10-2023 a las 23:02:44
+-- Tiempo de generación: 01-11-2023 a las 22:53:20
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -90,21 +90,6 @@ CREATE TABLE `cliente` (
 
 INSERT INTO `cliente` (`ID_Cliente`, `Cedula_Cliente`, `Nombre_Cliente`, `Apellido_Cliente`, `Telefono_Cliente`, `Correo_Cliente`, `Direccion_Cliente`) VALUES
 (1, 30274211, 'Esteban', 'Galban', '04246297348', 'estebang@gmail.com', 'Francisco de Miranda');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `detalle_factura`
---
-
-CREATE TABLE `detalle_factura` (
-  `ID_Detalle_Factura` int(11) NOT NULL,
-  `Cantidad` int(11) NOT NULL,
-  `Total_Pago` decimal(10,2) NOT NULL,
-  `Productos_ID_Producto` int(11) NOT NULL,
-  `Recibos_ID_Recibo` int(11) NOT NULL,
-  `Recibos_Cliente_ID_Cliente` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
@@ -342,14 +327,6 @@ ALTER TABLE `cliente`
   ADD UNIQUE KEY `Cedula_Cliente_UNIQUE` (`Cedula_Cliente`);
 
 --
--- Indices de la tabla `detalle_factura`
---
-ALTER TABLE `detalle_factura`
-  ADD PRIMARY KEY (`ID_Detalle_Factura`,`Productos_ID_Producto`,`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`),
-  ADD KEY `fk_Detalle_Factura_Productos1_idx` (`Productos_ID_Producto`),
-  ADD KEY `fk_Detalle_Factura_Recibos1_idx` (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`);
-
---
 -- Indices de la tabla `devoluciones`
 --
 ALTER TABLE `devoluciones`
@@ -472,12 +449,6 @@ ALTER TABLE `cliente`
   MODIFY `ID_Cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `detalle_factura`
---
-ALTER TABLE `detalle_factura`
-  MODIFY `ID_Detalle_Factura` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `devoluciones`
 --
 ALTER TABLE `devoluciones`
@@ -564,13 +535,6 @@ ALTER TABLE `categorias`
 --
 ALTER TABLE `cierrecaja`
   ADD CONSTRAINT `fk_CierreCaja_Usuarios1` FOREIGN KEY (`Usuarios_ID_Usuario`) REFERENCES `usuarios` (`ID_Usuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Filtros para la tabla `detalle_factura`
---
-ALTER TABLE `detalle_factura`
-  ADD CONSTRAINT `fk_Detalle_Factura_Productos1` FOREIGN KEY (`Productos_ID_Producto`) REFERENCES `productos` (`ID_Producto`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Detalle_Factura_Recibos1` FOREIGN KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`) REFERENCES `recibos` (`ID_Recibo`, `Cliente_ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `devoluciones`
