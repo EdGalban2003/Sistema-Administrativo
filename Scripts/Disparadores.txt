@@ -235,6 +235,107 @@ DELIMITER ;
 
 
 
+####################################
+Para Tabla Productos Tienen Impuestos:
+####################################
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Eliminar_ProImp
+AFTER DELETE ON Productos_has_Impuestos
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Productos Tienen Impuestos';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Productos Tienen Impuestos');
+END;
+$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Modificar_ProImp
+AFTER UPDATE ON Productos_has_Impuestos
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Productos Tienen Impuestos';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Productos Tienen Impuestos');
+END;
+$$
+
+DELIMITER ;
+
+
+
+
+######################
+Para Tabla Inventario:
+######################
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Añadir_Inventario
+AFTER INSERT ON Inventario
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Inventario';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en PInventario');
+END;
+$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Eliminar_Inventario
+AFTER DELETE ON Inventario
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Inventario';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en PInventario');
+END;
+$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Modificar_Inventario
+AFTER UPDATE ON Inventario
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Inventario';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en PInventario');
+END;
+$$
+
+DELIMITER ;
+
+
+
+
+
 ###############################
 Para Tabla Informacion Negocio:
 ###############################
@@ -355,6 +456,106 @@ DELIMITER ;
 
 
 
+###################
+Para Tabla Recibos:
+###################
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Añadir_Recibos
+AFTER INSERT ON Recibos
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Recibos';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos');
+END;
+$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Eliminar_Recibos
+AFTER DELETE ON Recibos
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Recibos';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos');
+END;
+$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Modificar_Recibos
+AFTER UPDATE ON Recibos
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Recibos';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos');
+END;
+$$
+
+DELIMITER ;
+
+
+
+
+
+####################################
+Para Tabla Recibos Tienen Impuestos:
+####################################
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Eliminar_RecImp
+AFTER DELETE ON Recibos_has_Impuestos
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Recibos Tienen Impuestos';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos Tienen Impuestos');
+END;
+$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER Trigger_Auditoria_Modificar_RecImp
+AFTER UPDATE ON Recibos_has_Impuestos
+FOR EACH ROW
+BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Recibos Tienen Impuestos';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos Tienen Impuestos');
+END;
+$$
+
+DELIMITER ;
+
+
+
+
+
 #####################
 Para Tabla Impuestos:
 #####################
@@ -406,64 +607,6 @@ BEGIN
 
   INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
   VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Impuestos');
-END;
-$$
-
-DELIMITER ;
-
-
-
-
-
-###################
-Para Tabla Recibos:
-###################
-
-DELIMITER $$
-
-CREATE TRIGGER Trigger_Auditoria_Añadir_Recibos
-AFTER INSERT ON Recibos
-FOR EACH ROW
-BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Operación en Recibos';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos');
-END;
-$$
-
-DELIMITER ;
-
-
-
-DELIMITER $$
-
-CREATE TRIGGER Trigger_Auditoria_Eliminar_Recibos
-AFTER DELETE ON Recibos
-FOR EACH ROW
-BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Operación en Recibos';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos');
-END;
-$$
-
-DELIMITER ;
-
-DELIMITER $$
-
-CREATE TRIGGER Trigger_Auditoria_Modificar_Recibos
-AFTER UPDATE ON Recibos
-FOR EACH ROW
-BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Operación en Recibos';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos');
 END;
 $$
 
