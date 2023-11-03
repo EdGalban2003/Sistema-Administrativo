@@ -94,32 +94,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Sistema_Administrativo`.`Detalle_Factura`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Detalle_Factura` (
-  `ID_Detalle_Factura` INT NOT NULL AUTO_INCREMENT,
-  `Cantidad` INT NOT NULL,
-  `Total_Pago` DECIMAL(10,2) NOT NULL,
-  `Productos_ID_Producto` INT NOT NULL,
-  `Recibos_ID_Recibo` INT NOT NULL,
-  `Recibos_Cliente_ID_Cliente` INT NOT NULL,
-  PRIMARY KEY (`ID_Detalle_Factura`, `Productos_ID_Producto`, `Recibos_ID_Recibo`, `Recibos_Cliente_ID_Cliente`),
-  INDEX `fk_Detalle_Factura_Productos1_idx` (`Productos_ID_Producto` ASC) ,
-  INDEX `fk_Detalle_Factura_Recibos1_idx` (`Recibos_ID_Recibo` ASC, `Recibos_Cliente_ID_Cliente` ASC) ,
-  CONSTRAINT `fk_Detalle_Factura_Productos1`
-    FOREIGN KEY (`Productos_ID_Producto`)
-    REFERENCES `Sistema_Administrativo`.`Productos` (`ID_Producto`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Detalle_Factura_Recibos1`
-    FOREIGN KEY (`Recibos_ID_Recibo` , `Recibos_Cliente_ID_Cliente`)
-    REFERENCES `Sistema_Administrativo`.`Recibos` (`ID_Recibo` , `Cliente_ID_Cliente`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `Sistema_Administrativo`.`Categorias`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Categorias` (
@@ -352,13 +326,100 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Impuestos` (
   `Nombre_Impuesto` VARCHAR(45) NOT NULL,
   `Tasa_Impuesto` DECIMAL(10,2) NOT NULL,
   `Descripcion_Impuesto` TEXT NULL,
+  PRIMARY KEY (`ID_Impuestos`),
+  UNIQUE INDEX `Nombre_Impuesto_UNIQUE` (`Nombre_Impuesto` ASC) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Sistema_Administrativo`.`Detalle_Productos_Recibos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Detalle_Productos_Recibos` (
+  `ID_Detalle_Productos_Recibo` INT NOT NULL AUTO_INCREMENT,
+  `Cantidad` INT NOT NULL,
+  `Precio_Venta` DECIMAL(10,2) NOT NULL,
+  `Total_Pago` DECIMAL(10,2) NOT NULL,
   `Productos_ID_Producto` INT NOT NULL,
-  PRIMARY KEY (`ID_Impuestos`, `Productos_ID_Producto`),
-  INDEX `fk_Impuestos_Productos1_idx` (`Productos_ID_Producto` ASC) ,
-  UNIQUE INDEX `Nombre_Impuesto_UNIQUE` (`Nombre_Impuesto` ASC) ,
-  CONSTRAINT `fk_Impuestos_Productos1`
+  `Recibos_ID_Recibo` INT NOT NULL,
+  `Recibos_Cliente_ID_Cliente` INT NOT NULL,
+  PRIMARY KEY (`ID_Detalle_Productos_Recibo`, `Productos_ID_Producto`, `Recibos_ID_Recibo`, `Recibos_Cliente_ID_Cliente`),
+  INDEX `fk_Detalle_Factura_Productos1_idx` (`Productos_ID_Producto` ASC) ,
+  INDEX `fk_Detalle_Factura_Recibos1_idx` (`Recibos_ID_Recibo` ASC, `Recibos_Cliente_ID_Cliente` ASC) ,
+  CONSTRAINT `fk_Detalle_Factura_Productos10`
     FOREIGN KEY (`Productos_ID_Producto`)
     REFERENCES `Sistema_Administrativo`.`Productos` (`ID_Producto`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Detalle_Factura_Recibos10`
+    FOREIGN KEY (`Recibos_ID_Recibo` , `Recibos_Cliente_ID_Cliente`)
+    REFERENCES `Sistema_Administrativo`.`Recibos` (`ID_Recibo` , `Cliente_ID_Cliente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Sistema_Administrativo`.`Productos_has_Impuestos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Productos_has_Impuestos` (
+  `Productos_ID_Producto` INT NOT NULL,
+  `Productos_Proveedor_ID_Proveedor` INT NOT NULL,
+  `Impuestos_ID_Impuestos` INT NOT NULL,
+  PRIMARY KEY (`Productos_ID_Producto`, `Productos_Proveedor_ID_Proveedor`, `Impuestos_ID_Impuestos`),
+  INDEX `fk_Productos_has_Impuestos_Impuestos1_idx` (`Impuestos_ID_Impuestos` ASC) ,
+  INDEX `fk_Productos_has_Impuestos_Productos1_idx` (`Productos_ID_Producto` ASC, `Productos_Proveedor_ID_Proveedor` ASC) ,
+  CONSTRAINT `fk_Productos_has_Impuestos_Productos1`
+    FOREIGN KEY (`Productos_ID_Producto` , `Productos_Proveedor_ID_Proveedor`)
+    REFERENCES `Sistema_Administrativo`.`Productos` (`ID_Producto` , `Proveedor_ID_Proveedor`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Productos_has_Impuestos_Impuestos1`
+    FOREIGN KEY (`Impuestos_ID_Impuestos`)
+    REFERENCES `Sistema_Administrativo`.`Impuestos` (`ID_Impuestos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Sistema_Administrativo`.`Recibos_has_Impuestos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Recibos_has_Impuestos` (
+  `Recibos_ID_Recibo` INT NOT NULL,
+  `Recibos_Cliente_ID_Cliente` INT NOT NULL,
+  `Impuestos_ID_Impuestos` INT NOT NULL,
+  PRIMARY KEY (`Recibos_ID_Recibo`, `Recibos_Cliente_ID_Cliente`, `Impuestos_ID_Impuestos`),
+  INDEX `fk_Recibos_has_Impuestos_Impuestos1_idx` (`Impuestos_ID_Impuestos` ASC) ,
+  INDEX `fk_Recibos_has_Impuestos_Recibos1_idx` (`Recibos_ID_Recibo` ASC, `Recibos_Cliente_ID_Cliente` ASC) ,
+  CONSTRAINT `fk_Recibos_has_Impuestos_Recibos1`
+    FOREIGN KEY (`Recibos_ID_Recibo` , `Recibos_Cliente_ID_Cliente`)
+    REFERENCES `Sistema_Administrativo`.`Recibos` (`ID_Recibo` , `Cliente_ID_Cliente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Recibos_has_Impuestos_Impuestos1`
+    FOREIGN KEY (`Impuestos_ID_Impuestos`)
+    REFERENCES `Sistema_Administrativo`.`Impuestos` (`ID_Impuestos`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Sistema_Administrativo`.`Inventario`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Inventario` (
+  `ID_Inventario` INT NOT NULL AUTO_INCREMENT,
+  `Fecha` DATE NOT NULL,
+  `Hora` TIME NOT NULL,
+  `Cantidad_Entrada` INT NOT NULL,
+  `Cantidad_Salida` INT NOT NULL,
+  `Productos_ID_Producto` INT NOT NULL,
+  `Productos_Proveedor_ID_Proveedor` INT NOT NULL,
+  PRIMARY KEY (`ID_Inventario`, `Productos_ID_Producto`, `Productos_Proveedor_ID_Proveedor`),
+  INDEX `fk_Inventario_Productos1_idx` (`Productos_ID_Producto` ASC, `Productos_Proveedor_ID_Proveedor` ASC) ,
+  CONSTRAINT `fk_Inventario_Productos1`
+    FOREIGN KEY (`Productos_ID_Producto` , `Productos_Proveedor_ID_Proveedor`)
+    REFERENCES `Sistema_Administrativo`.`Productos` (`ID_Producto` , `Proveedor_ID_Proveedor`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
