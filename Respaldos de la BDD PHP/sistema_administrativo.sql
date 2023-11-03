@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-11-2023 a las 19:30:51
+-- Tiempo de generación: 03-11-2023 a las 03:51:22
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -84,6 +84,29 @@ CREATE TABLE `cliente` (
   `Direccion_Cliente` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Volcado de datos para la tabla `cliente`
+--
+
+INSERT INTO `cliente` (`ID_Cliente`, `Cedula_Cliente`, `Nombre_Cliente`, `Apellido_Cliente`, `Telefono_Cliente`, `Correo_Cliente`, `Direccion_Cliente`) VALUES
+(8, 22056489, 'Esteban Daniel', 'Galban Correa', '04246297348', 'ASD@gmail.com', 'Maracaibo Estado Zulia');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalle_productos_recibos`
+--
+
+CREATE TABLE `detalle_productos_recibos` (
+  `ID_Detalle_Productos_Recibo` int(11) NOT NULL,
+  `Cantidad` int(11) NOT NULL,
+  `Precio_Venta` decimal(10,2) NOT NULL,
+  `Total_Pago` decimal(10,2) NOT NULL,
+  `Productos_ID_Producto` int(11) NOT NULL,
+  `Recibos_ID_Recibo` int(11) NOT NULL,
+  `Recibos_Cliente_ID_Cliente` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -151,6 +174,36 @@ CREATE TABLE `informacion_negocio` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `inventario`
+--
+
+CREATE TABLE `inventario` (
+  `ID_Inventario` int(11) NOT NULL,
+  `Fecha` date NOT NULL,
+  `Hora` time NOT NULL,
+  `Cantidad_Entrada` int(11) NOT NULL,
+  `Cantidad_Salida` int(11) NOT NULL,
+  `Productos_ID_Producto` int(11) NOT NULL,
+  `Productos_Proveedor_ID_Proveedor` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Disparadores `inventario`
+--
+DELIMITER $$
+CREATE TRIGGER `Trigger_Auditoria_Modificar_Inventario` AFTER INSERT ON `inventario` FOR EACH ROW BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Inventario';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en PInventario');
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `manual`
 --
 
@@ -204,6 +257,32 @@ INSERT INTO `productos` (`ID_Producto`, `Nombre_Producto`, `Codigo_Producto`, `D
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `productos_has_impuestos`
+--
+
+CREATE TABLE `productos_has_impuestos` (
+  `Productos_ID_Producto` int(11) NOT NULL,
+  `Productos_Proveedor_ID_Proveedor` int(11) NOT NULL,
+  `Impuestos_ID_Impuestos` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Disparadores `productos_has_impuestos`
+--
+DELIMITER $$
+CREATE TRIGGER `Trigger_Auditoria_Eliminar_ProImp` AFTER DELETE ON `productos_has_impuestos` FOR EACH ROW BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Productos Tienen Impuestos';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Productos Tienen Impuestos');
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `proveedor`
 --
 
@@ -238,6 +317,32 @@ CREATE TABLE `recibos` (
   `Hora_Recibo` time NOT NULL,
   `Cliente_ID_Cliente` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `recibos_has_impuestos`
+--
+
+CREATE TABLE `recibos_has_impuestos` (
+  `Recibos_ID_Recibo` int(11) NOT NULL,
+  `Recibos_Cliente_ID_Cliente` int(11) NOT NULL,
+  `Impuestos_ID_Impuestos` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Disparadores `recibos_has_impuestos`
+--
+DELIMITER $$
+CREATE TRIGGER `Trigger_Auditoria_Eliminar_RecImp` AFTER INSERT ON `recibos_has_impuestos` FOR EACH ROW BEGIN
+  DECLARE accion VARCHAR(45);
+  SET accion = 'Operación en Recibos Tienen Impuestos';
+
+  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
+  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos Tienen Impuestos');
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -321,6 +426,14 @@ ALTER TABLE `cliente`
   ADD UNIQUE KEY `Cedula_Cliente_UNIQUE` (`Cedula_Cliente`);
 
 --
+-- Indices de la tabla `detalle_productos_recibos`
+--
+ALTER TABLE `detalle_productos_recibos`
+  ADD PRIMARY KEY (`ID_Detalle_Productos_Recibo`,`Productos_ID_Producto`,`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`),
+  ADD KEY `fk_Detalle_Factura_Productos1_idx` (`Productos_ID_Producto`),
+  ADD KEY `fk_Detalle_Factura_Recibos1_idx` (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`);
+
+--
 -- Indices de la tabla `devoluciones`
 --
 ALTER TABLE `devoluciones`
@@ -352,6 +465,13 @@ ALTER TABLE `informacion_negocio`
   ADD UNIQUE KEY `Numero_Documento_UNIQUE` (`Numero_Documento`);
 
 --
+-- Indices de la tabla `inventario`
+--
+ALTER TABLE `inventario`
+  ADD PRIMARY KEY (`ID_Inventario`,`Productos_ID_Producto`,`Productos_Proveedor_ID_Proveedor`),
+  ADD KEY `fk_Inventario_Productos1_idx` (`Productos_ID_Producto`,`Productos_Proveedor_ID_Proveedor`);
+
+--
 -- Indices de la tabla `manual`
 --
 ALTER TABLE `manual`
@@ -375,6 +495,14 @@ ALTER TABLE `productos`
   ADD KEY `fk_Productos_Proveedor1_idx` (`Proveedor_ID_Proveedor`);
 
 --
+-- Indices de la tabla `productos_has_impuestos`
+--
+ALTER TABLE `productos_has_impuestos`
+  ADD PRIMARY KEY (`Productos_ID_Producto`,`Productos_Proveedor_ID_Proveedor`,`Impuestos_ID_Impuestos`),
+  ADD KEY `fk_Productos_has_Impuestos_Impuestos1_idx` (`Impuestos_ID_Impuestos`),
+  ADD KEY `fk_Productos_has_Impuestos_Productos1_idx` (`Productos_ID_Producto`,`Productos_Proveedor_ID_Proveedor`);
+
+--
 -- Indices de la tabla `proveedor`
 --
 ALTER TABLE `proveedor`
@@ -388,6 +516,14 @@ ALTER TABLE `proveedor`
 ALTER TABLE `recibos`
   ADD PRIMARY KEY (`ID_Recibo`,`Cliente_ID_Cliente`),
   ADD KEY `fk_Factura_Cliente1_idx` (`Cliente_ID_Cliente`);
+
+--
+-- Indices de la tabla `recibos_has_impuestos`
+--
+ALTER TABLE `recibos_has_impuestos`
+  ADD PRIMARY KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`,`Impuestos_ID_Impuestos`),
+  ADD KEY `fk_Recibos_has_Impuestos_Impuestos1_idx` (`Impuestos_ID_Impuestos`),
+  ADD KEY `fk_Recibos_has_Impuestos_Recibos1_idx` (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`);
 
 --
 -- Indices de la tabla `reembolsos`
@@ -439,7 +575,13 @@ ALTER TABLE `cierrecaja`
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `ID_Cliente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID_Cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de la tabla `detalle_productos_recibos`
+--
+ALTER TABLE `detalle_productos_recibos`
+  MODIFY `ID_Detalle_Productos_Recibo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `devoluciones`
@@ -464,6 +606,12 @@ ALTER TABLE `impuestos`
 --
 ALTER TABLE `informacion_negocio`
   MODIFY `ID_InformacionNegocio` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `inventario`
+--
+ALTER TABLE `inventario`
+  MODIFY `ID_Inventario` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `manual`
@@ -530,6 +678,13 @@ ALTER TABLE `cierrecaja`
   ADD CONSTRAINT `fk_CierreCaja_Usuarios1` FOREIGN KEY (`Usuarios_ID_Usuario`) REFERENCES `usuarios` (`ID_Usuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
+-- Filtros para la tabla `detalle_productos_recibos`
+--
+ALTER TABLE `detalle_productos_recibos`
+  ADD CONSTRAINT `fk_Detalle_Factura_Productos10` FOREIGN KEY (`Productos_ID_Producto`) REFERENCES `productos` (`ID_Producto`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Detalle_Factura_Recibos10` FOREIGN KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`) REFERENCES `recibos` (`ID_Recibo`, `Cliente_ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
 -- Filtros para la tabla `devoluciones`
 --
 ALTER TABLE `devoluciones`
@@ -541,6 +696,12 @@ ALTER TABLE `devoluciones`
 --
 ALTER TABLE `forma_de_pago`
   ADD CONSTRAINT `fk_Forma_de_Pago_Recibos1` FOREIGN KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`) REFERENCES `recibos` (`ID_Recibo`, `Cliente_ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `inventario`
+--
+ALTER TABLE `inventario`
+  ADD CONSTRAINT `fk_Inventario_Productos1` FOREIGN KEY (`Productos_ID_Producto`,`Productos_Proveedor_ID_Proveedor`) REFERENCES `productos` (`ID_Producto`, `Proveedor_ID_Proveedor`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `permisos`
@@ -555,10 +716,24 @@ ALTER TABLE `productos`
   ADD CONSTRAINT `fk_Productos_Proveedor1` FOREIGN KEY (`Proveedor_ID_Proveedor`) REFERENCES `proveedor` (`ID_Proveedor`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
+-- Filtros para la tabla `productos_has_impuestos`
+--
+ALTER TABLE `productos_has_impuestos`
+  ADD CONSTRAINT `fk_Productos_has_Impuestos_Impuestos1` FOREIGN KEY (`Impuestos_ID_Impuestos`) REFERENCES `impuestos` (`ID_Impuestos`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Productos_has_Impuestos_Productos1` FOREIGN KEY (`Productos_ID_Producto`,`Productos_Proveedor_ID_Proveedor`) REFERENCES `productos` (`ID_Producto`, `Proveedor_ID_Proveedor`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
 -- Filtros para la tabla `recibos`
 --
 ALTER TABLE `recibos`
   ADD CONSTRAINT `fk_Factura_Cliente1` FOREIGN KEY (`Cliente_ID_Cliente`) REFERENCES `cliente` (`ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `recibos_has_impuestos`
+--
+ALTER TABLE `recibos_has_impuestos`
+  ADD CONSTRAINT `fk_Recibos_has_Impuestos_Impuestos1` FOREIGN KEY (`Impuestos_ID_Impuestos`) REFERENCES `impuestos` (`ID_Impuestos`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Recibos_has_Impuestos_Recibos1` FOREIGN KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`) REFERENCES `recibos` (`ID_Recibo`, `Cliente_ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `reembolsos`
