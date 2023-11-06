@@ -79,8 +79,8 @@ def modificar_cliente_por_cedula(cedula, nuevo_nombre, nuevo_apellido, nuevo_tel
     else:
         print(f"No existe un cliente con cédula {cedula} en la base de datos.")
 
-# # Solicitar cédula del cliente al usuario desde la terminal
-# cedula = input("Introduce la cédula del cliente cuyos datos deseas modificar: ")
+# Solicitar cédula del cliente al usuario desde la terminal
+cedula = input("Introduce la cédula del cliente cuyos datos deseas modificar: ")
 
 # # Llamar a la función para modificar los datos del cliente por cédula
 # if cliente_existe_por_cedula(cedula):
