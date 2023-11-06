@@ -1,5 +1,5 @@
 <?php
-// Conexión a la base de datos (debes establecer tu propia conexión)
+// Conexión a la base de datos 
 $servername = "localhost";
 $username = "Admin";
 $password = "xztj-ARgQGavgh@K";
@@ -12,43 +12,37 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-// Función para consultar clientes por nombre
-function consultar_cliente_por_nombre($nombre, $conn) {
-    $query = "SELECT * FROM Cliente WHERE Nombre_Cliente LIKE ?";
+// Función para consultar un proveedor por número de documento
+function consultar_proveedor_por_numero_documento($numero_documento, $conn) {
+    $query = "SELECT * FROM Proveedor WHERE Numero_Documento = ?";
     $stmt = $conn->prepare($query);
-    $nombreLike = "%" . $nombre . "%";
-    $stmt->bind_param("s", $nombreLike);
+    $stmt->bind_param("s", $numero_documento);
     $stmt->execute();
     $result = $stmt->get_result();
-    $clientes = array();
-    
-    while ($row = $result->fetch_assoc()) {
-        $clientes[] = $row;
-    }
-    
+    $proveedor = $result->fetch_assoc();
     $stmt->close();
     
-    return $clientes;
+    return $proveedor;
 }
 
-// Verificar si se ha enviado el nombre del cliente a consultar
-if (isset($_POST['nombre'])) {
-    $nombre = $_POST['nombre'];
-    $clientes = consultar_cliente_por_nombre($nombre, $conn);
+// Verificar si se ha enviado el número de documento del proveedor a consultar
+if (isset($_POST['numero_documento'])) {
+    $numero_documento = $_POST['numero_documento'];
+    $proveedor = consultar_proveedor_por_numero_documento($numero_documento, $conn);
 
-    if ($clientes) {
-        echo "Clientes encontrados:";
-        foreach ($clientes as $cliente) {
-            echo "ID: " . $cliente['ID_Cliente'];
-            echo "Cédula: " . $cliente['Cedula_Cliente'];
-            echo "Nombre: " . $cliente['Nombre_Cliente'];
-            echo "Apellido: " . $cliente['Apellido_Cliente'];
-            echo "Teléfono: " . $cliente['Telefono_Cliente'];
-            echo "Correo: " . $cliente['Correo_Cliente'];
-            echo "Dirección: " . $cliente['Direccion_Cliente'];
-        }
+    if ($proveedor) {
+        echo "Proveedor encontrado:";
+        echo "ID: " . $proveedor['ID_Proveedor'];
+        echo "Nombre Comercial: " . $proveedor['Nombre_Comercial_Proveedor'];
+        echo "Nombre: " . $proveedor['Nombre_Proveedor'];
+        echo "Apellido: " . $proveedor['Apellido_Proveedor'];
+        echo "Tipo de Documento: " . $proveedor['Tipo_Documento'];
+        echo "Número de Documento: " . $proveedor['Numero_Documento'];
+        echo "Teléfono: " . $proveedor['Telefono_Proveedor'];
+        echo "Correo: " . $proveedor['Correo_Proveedor'];
+        echo "Dirección: " . $proveedor['Direccion_Proveedor'];
     } else {
-        echo "No se encontraron clientes con ese nombre.";
+        echo "Proveedor no encontrado.";
     }
 }
 
@@ -59,14 +53,14 @@ $conn->close();
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Consultar Cliente por Nombre</title>
+    <title>Consultar Proveedor</title>
 </head>
 <body>
-    <h1>Consultar Cliente por Nombre</h1>
+    <h1>Consultar Proveedor por Número de Documento</h1>
     <form method="post">
-        <label for="nombre">Nombre del Cliente a Consultar:</label>
-        <input type="text" name="nombre" id="nombre" required>
-        <button type="submit">Consultar Cliente</button>
+        <label for="numero_documento">Número de Documento del Proveedor a Consultar:</label>
+        <input type="text" name="numero_documento" id="numero_documento" required>
+        <button type="submit">Consultar Proveedor</button>
     </form>
 </body>
 </html>

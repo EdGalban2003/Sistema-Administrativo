@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Crear Cliente</title>
+    <title>Añadir Producto</title>
 </head>
 <body>
-    
-    
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $servername = "localhost";
@@ -21,49 +19,49 @@
             die("Error al conectar a la base de datos: " . $conexion->connect_error);
         }
 
-        $cedula = $_POST['cedula'];
         $nombre = $_POST['nombre'];
-        $apellido = $_POST['apellido'];
-        $telefono = $_POST['telefono'];
-        $correo = $_POST['correo'];
-        $direccion = $_POST['direccion'];
+        $codigo = $_POST['codigo'];
+        $detalle = $_POST['detalle'];
+        $cantidad = $_POST['cantidad'];
+        $precio_venta = $_POST['precio_venta'];
+        $precio_costo = $_POST['precio_costo'];
+        $fecha_ingreso = $_POST['fecha_ingreso'];
+        $id_proveedor = $_POST['id_proveedor'];
 
-        // Función para crear un cliente
-        function crearCliente($conexion, $cedula, $nombre, $apellido, $telefono, $correo, $direccion) {
-            $query = "INSERT INTO Cliente (Cedula_Cliente, Nombre_Cliente, Apellido_Cliente, Telefono_Cliente, Correo_Cliente, Direccion_Cliente) VALUES (?, ?, ?, ?, ?, ?)";
+        // Función para crear un producto
+        function crearProducto($conexion, $nombre, $codigo, $detalle, $cantidad, $precio_venta, $precio_costo, $fecha_ingreso, $id_proveedor) {
+            $query = "INSERT INTO Productos (Nombre_Producto, Codigo_Producto, Detalle_Producto, Cantidad_Producto, Precio_Venta, Precio_Costo, Fecha_Ingreso, Proveedor_ID_Proveedor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conexion->prepare($query);
-            $stmt->bind_param("ssssss", $cedula, $nombre, $apellido, $telefono, $correo, $direccion);
+            $stmt->bind_param("ssssssss", $nombre, $codigo, $detalle, $cantidad, $precio_venta, $precio_costo, $fecha_ingreso, $id_proveedor);
             
             if ($stmt->execute()) {
-                echo "Cliente creado con éxito.";
+                echo "Producto creado con éxito.";
             } else {
-                echo "Error al crear el cliente: " . $stmt->error;
+                echo "Error al crear el producto: " . $stmt->error;
             }
             
             $stmt->close();
         }
 
-        // Llamar a la función para crear un cliente
-        crearCliente($conexion, $cedula, $nombre, $apellido, $telefono, $correo, $direccion);
+        // Llamar a la función para crear un producto
+        crearProducto($conexion, $nombre, $codigo, $detalle, $cantidad, $precio_venta, $precio_costo, $fecha_ingreso, $id_proveedor);
 
         // Cerrar la conexión cuando hayas terminado
         $conexion->close();
     }
     ?>
 
-
-
-    <h1>Crear Cliente</h1>
+    <h1>Añadir Producto</h1>
     <form method="post">
-        Cédula del cliente: <input type="text" name="cedula"><br>
-        Nombre del cliente: <input type="text" name="nombre"><br>
-        Apellido del cliente: <input type="text" name="apellido"><br>
-        Teléfono del cliente: <input type="text" name="telefono"><br>
-        Correo del cliente: <input type="text" name="correo"><br>
-        Dirección del cliente: <input type="text" name="direccion"><br>
-        <input type="submit" value="Crear Cliente">
+        Nombre del producto: <input type="text" name="nombre" required><br>
+        Código del producto: <input type="text" name="codigo" required><br>
+        Detalle del producto: <input type="text" name="detalle" required><br>
+        Cantidad del producto: <input type="number" name="cantidad" required><br>
+        Precio de venta del producto: <input type="number" name="precio_venta" step="0.01" required><br>
+        Precio de costo del producto: <input type="number" name="precio_costo" step="0.01" required><br>
+        Fecha de ingreso del producto: <input type="date" name="fecha_ingreso" required><br>
+        ID del proveedor: <input type="text" name="id_proveedor" required><br>
+        <input type="submit" value="Añadir Producto">
     </form>
-
-
 </body>
 </html>

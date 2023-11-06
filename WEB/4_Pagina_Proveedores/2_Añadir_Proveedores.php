@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Crear Cliente</title>
+    <title>Añadir Proveedor</title>
 </head>
 <body>
-    
-    
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $servername = "localhost";
@@ -21,49 +19,49 @@
             die("Error al conectar a la base de datos: " . $conexion->connect_error);
         }
 
-        $cedula = $_POST['cedula'];
+        $nombre_comercial = $_POST['nombre_comercial'];
         $nombre = $_POST['nombre'];
         $apellido = $_POST['apellido'];
+        $tipo_documento = $_POST['tipo_documento'];
+        $numero_documento = $_POST['numero_documento'];
         $telefono = $_POST['telefono'];
         $correo = $_POST['correo'];
         $direccion = $_POST['direccion'];
 
-        // Función para crear un cliente
-        function crearCliente($conexion, $cedula, $nombre, $apellido, $telefono, $correo, $direccion) {
-            $query = "INSERT INTO Cliente (Cedula_Cliente, Nombre_Cliente, Apellido_Cliente, Telefono_Cliente, Correo_Cliente, Direccion_Cliente) VALUES (?, ?, ?, ?, ?, ?)";
+        // Función para crear un proveedor
+        function crearProveedor($conexion, $nombre_comercial, $nombre, $apellido, $tipo_documento, $numero_documento, $telefono, $correo, $direccion) {
+            $query = "INSERT INTO Proveedor (Nombre_Comercial_Proveedor, Nombre_Proveedor, Apellido_Proveedor, Tipo_Documento, Numero_Documento, Telefono_Proveedor, Correo_Proveedor, Direccion_Proveedor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conexion->prepare($query);
-            $stmt->bind_param("ssssss", $cedula, $nombre, $apellido, $telefono, $correo, $direccion);
+            $stmt->bind_param("ssssssss", $nombre_comercial, $nombre, $apellido, $tipo_documento, $numero_documento, $telefono, $correo, $direccion);
             
             if ($stmt->execute()) {
-                echo "Cliente creado con éxito.";
+                echo "Proveedor creado con éxito.";
             } else {
-                echo "Error al crear el cliente: " . $stmt->error;
+                echo "Error al crear el proveedor: " . $stmt->error;
             }
             
             $stmt->close();
         }
 
-        // Llamar a la función para crear un cliente
-        crearCliente($conexion, $cedula, $nombre, $apellido, $telefono, $correo, $direccion);
+        // Llamar a la función para crear un proveedor
+        crearProveedor($conexion, $nombre_comercial, $nombre, $apellido, $tipo_documento, $numero_documento, $telefono, $correo, $direccion);
 
         // Cerrar la conexión cuando hayas terminado
         $conexion->close();
     }
     ?>
 
-
-
-    <h1>Crear Cliente</h1>
+    <h1>Añadir Proveedor</h1>
     <form method="post">
-        Cédula del cliente: <input type="text" name="cedula"><br>
-        Nombre del cliente: <input type="text" name="nombre"><br>
-        Apellido del cliente: <input type="text" name="apellido"><br>
-        Teléfono del cliente: <input type="text" name="telefono"><br>
-        Correo del cliente: <input type="text" name="correo"><br>
-        Dirección del cliente: <input type="text" name="direccion"><br>
-        <input type="submit" value="Crear Cliente">
+        Nombre Comercial del proveedor: <input type="text" name="nombre_comercial"><br>
+        Nombre del proveedor: <input type="text" name="nombre"><br>
+        Apellido del proveedor: <input type="text" name="apellido"><br>
+        Tipo de documento: <input type="text" name="tipo_documento"><br>
+        Número de documento del proveedor: <input type="text" name="numero_documento"><br>
+        Teléfono del proveedor: <input type="text" name="telefono"><br>
+        Correo del proveedor: <input type="text" name="correo"><br>
+        Dirección del proveedor: <input type="text" name="direccion"><br>
+        <input type="submit" value="Añadir Proveedor">
     </form>
-
-
 </body>
 </html>

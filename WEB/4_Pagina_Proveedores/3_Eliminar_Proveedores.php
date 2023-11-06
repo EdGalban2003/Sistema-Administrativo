@@ -12,41 +12,41 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-// Función para verificar si un cliente existe por su cédula
-function cliente_existe_por_cedula($cedula, $conn) {
-    $query = "SELECT COUNT(*) FROM Cliente WHERE Cedula_Cliente = ?";
+// Función para verificar si un proveedor existe por su número de documento
+function proveedor_existe_por_numero_documento($numero_documento, $conn) {
+    $query = "SELECT COUNT(*) FROM Proveedor WHERE Numero_Documento = ?";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $cedula);
+    $stmt->bind_param("s", $numero_documento);
     $stmt->execute();
     $stmt->bind_result($count);
     $stmt->fetch();
     $stmt->close();
-    
+
     return $count > 0;
 }
 
-// Función para eliminar un cliente por su cédula
-function eliminar_cliente_por_cedula($cedula, $conn) {
-    if (cliente_existe_por_cedula($cedula, $conn)) {
-        $query = "DELETE FROM Cliente WHERE Cedula_Cliente = ?";
+// Función para eliminar un proveedor por su número de documento
+function eliminar_proveedor_por_numero_documento($numero_documento, $conn) {
+    if (proveedor_existe_por_numero_documento($numero_documento, $conn)) {
+        $query = "DELETE FROM Proveedor WHERE Numero_Documento = ?";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("s", $cedula);
-        
+        $stmt->bind_param("s", $numero_documento);
+
         if ($stmt->execute()) {
-            echo "Cliente con cédula $cedula eliminado con éxito.";
+            echo "Proveedor con número de documento $numero_documento eliminado con éxito.";
         } else {
-            echo "Error al eliminar el cliente.";
+            echo "Error al eliminar el proveedor.";
         }
         $stmt->close();
     } else {
-        echo "No existe un cliente con la cédula $cedula en la base de datos.";
+        echo "No existe un proveedor con el número de documento $numero_documento en la base de datos.";
     }
 }
 
-// Verificar si se ha enviado la cédula del cliente a eliminar
-if (isset($_POST['cedula'])) {
-    $cedula = $_POST['cedula'];
-    eliminar_cliente_por_cedula($cedula, $conn);
+// Verificar si se ha enviado el número de documento del proveedor a eliminar
+if (isset($_POST['numero_documento'])) {
+    $numero_documento = $_POST['numero_documento'];
+    eliminar_proveedor_por_numero_documento($numero_documento, $conn);
 }
 
 // Cerrar la conexión a la base de datos
@@ -56,14 +56,14 @@ $conn->close();
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Eliminar Cliente</title>
+    <title>Eliminar Proveedor</title>
 </head>
 <body>
-    <h1>Eliminar Cliente por Cédula</h1>
+    <h1>Eliminar Proveedor por Número de Documento</h1>
     <form method="post">
-        <label for="cedula">Cédula del Cliente a Eliminar:</label>
-        <input type="text" name="cedula" id="cedula" required>
-        <button type="submit">Eliminar Cliente</button>
+        <label for="numero_documento">Número de Documento del Proveedor a Eliminar:</label>
+        <input type="text" name="numero_documento" id="numero_documento" required>
+        <button type="submit">Eliminar Proveedor</button>
     </form>
 </body>
 </html>
