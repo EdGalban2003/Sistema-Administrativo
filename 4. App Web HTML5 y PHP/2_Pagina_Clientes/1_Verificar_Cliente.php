@@ -1,11 +1,9 @@
 <?php
-// Conexión a la base de datos 
-$servername = "localhost";
-$username = "Admin";
-$password = "xztj-ARgQGavgh@K";
-$database = "sistema_administrativo";
+// Incluye el archivo de configuración
+require('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\config.php');
 
-$conn = new mysqli($servername, $username, $password, $database);
+// Conexión a la base de datos
+$conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
 
 // Verificar la conexión
 if ($conn->connect_error) {

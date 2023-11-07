@@ -7,8 +7,8 @@
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $servername = "localhost";
-        $username = "Admin";
-        $password = "xztj-ARgQGavgh@K";
+        $username = "UserGuest";
+        $password = "U$3rG#3stP@ss";
         $database = "sistema_administrativo";
 
         // Intentar conectar a la base de datos

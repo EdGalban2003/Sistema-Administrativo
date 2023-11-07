@@ -195,14 +195,13 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Usuarios` (
   `Nombre_Personal` VARCHAR(45) NOT NULL,
   `Apellido_Personal` VARCHAR(45) NOT NULL,
   `Nombre_Usuario` VARCHAR(45) NOT NULL,
-  `Contraseña` VARCHAR(45) NOT NULL,
+  `Contraseña` VARBINARY(32) NOT NULL,
   `Correo_Usuario` VARCHAR(45) NOT NULL,
   `Fecha_Registro` DATE NOT NULL,
   `Hora_Registro` TIME NOT NULL,
   `Salt` VARBINARY(32) NOT NULL,
   PRIMARY KEY (`ID_Usuario`),
   UNIQUE INDEX `Nombre_Usuario_UNIQUE` (`Nombre_Usuario` ASC) ,
-  UNIQUE INDEX `Contraseña_UNIQUE` (`Contraseña` ASC) ,
   UNIQUE INDEX `Salt_UNIQUE` (`Salt` ASC) )
 ENGINE = InnoDB;
 

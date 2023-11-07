@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-10-2023 a las 23:02:44
+-- Tiempo de generación: 07-11-2023 a las 20:52:09
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -83,13 +83,6 @@ CREATE TABLE `cliente` (
   `Correo_Cliente` varchar(45) DEFAULT NULL,
   `Direccion_Cliente` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Volcado de datos para la tabla `cliente`
---
-
-INSERT INTO `cliente` (`ID_Cliente`, `Cedula_Cliente`, `Nombre_Cliente`, `Apellido_Cliente`, `Telefono_Cliente`, `Correo_Cliente`, `Direccion_Cliente`) VALUES
-(1, 30274211, 'Esteban', 'Galban', '04246297348', 'estebang@gmail.com', 'Francisco de Miranda');
 
 -- --------------------------------------------------------
 
@@ -212,15 +205,10 @@ CREATE TABLE `productos` (
   `Precio_Venta` decimal(10,2) NOT NULL,
   `Precio_Costo` decimal(10,2) NOT NULL,
   `Fecha_Ingreso` date NOT NULL,
+  `Descuento` decimal(10,2) DEFAULT NULL,
+  `Promocion` decimal(10,2) DEFAULT NULL,
   `Proveedor_ID_Proveedor` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Volcado de datos para la tabla `productos`
---
-
-INSERT INTO `productos` (`ID_Producto`, `Nombre_Producto`, `Codigo_Producto`, `Detalle_Producto`, `Cantidad_Producto`, `Precio_Venta`, `Precio_Costo`, `Fecha_Ingreso`, `Proveedor_ID_Proveedor`) VALUES
-(3, 'cOCA', 'C01', 'Cocaina', 120, 90.00, 50.00, '0000-00-00', 2);
 
 -- --------------------------------------------------------
 
@@ -239,13 +227,6 @@ CREATE TABLE `proveedor` (
   `Correo_Proveedor` varchar(45) NOT NULL,
   `Direccion_Proveedor` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Volcado de datos para la tabla `proveedor`
---
-
-INSERT INTO `proveedor` (`ID_Proveedor`, `Nombre_Comercial_Proveedor`, `Nombre_Proveedor`, `Apellido_Proveedor`, `Tipo_Documento`, `Numero_Documento`, `Telefono_Proveedor`, `Correo_Proveedor`, `Direccion_Proveedor`) VALUES
-(2, 'PablitosBurger', 'Pablito', 'Burguer', 'J', '500119291', '04246297348', 'esteban@gmail.com', 'Calle 80 A');
 
 -- --------------------------------------------------------
 
@@ -302,11 +283,11 @@ CREATE TABLE `usuarios` (
   `Nombre_Personal` varchar(45) NOT NULL,
   `Apellido_Personal` varchar(45) NOT NULL,
   `Nombre_Usuario` varchar(45) NOT NULL,
-  `Contraseña` varchar(45) NOT NULL,
+  `Contraseña` varbinary(32) NOT NULL,
   `Correo_Usuario` varchar(45) NOT NULL,
   `Fecha_Registro` date NOT NULL,
   `Hora_Registro` time NOT NULL,
-  `Salt` text NOT NULL
+  `Salt` varbinary(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -441,7 +422,7 @@ ALTER TABLE `roles`
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`ID_Usuario`),
   ADD UNIQUE KEY `Nombre_Usuario_UNIQUE` (`Nombre_Usuario`),
-  ADD UNIQUE KEY `Contraseña_UNIQUE` (`Contraseña`);
+  ADD UNIQUE KEY `Salt_UNIQUE` (`Salt`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -469,7 +450,7 @@ ALTER TABLE `cierrecaja`
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `ID_Cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID_Cliente` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_factura`
@@ -517,13 +498,13 @@ ALTER TABLE `permisos`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `ID_Producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `ID_Producto` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`
 --
 ALTER TABLE `proveedor`
-  MODIFY `ID_Proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID_Proveedor` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `recibos`
