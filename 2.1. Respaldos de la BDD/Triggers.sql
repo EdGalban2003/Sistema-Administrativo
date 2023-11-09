@@ -617,13 +617,13 @@ DELIMITER ;
 
 
 ###########################
-Para Tabla Detalle_Productos_Recibos:
+Para Tabla Detalle_Recibos:
 ###########################
 
 DELIMITER $$
 
 CREATE TRIGGER Trigger_Auditoria_Añadir_DetRec
-AFTER INSERT ON Detalle_Productos_Recibos
+AFTER INSERT ON Detalle_Recibos
 FOR EACH ROW
 BEGIN
   DECLARE accion VARCHAR(45);
@@ -641,7 +641,7 @@ DELIMITER ;
 DELIMITER $$
 
 CREATE TRIGGER Trigger_Auditoria_Eliminar_DetRec
-AFTER DELETE ON Detalle_Productos_Recibos
+AFTER DELETE ON Detalle_Recibos
 FOR EACH ROW
 BEGIN
   DECLARE accion VARCHAR(45);
@@ -659,7 +659,7 @@ DELIMITER ;
 DELIMITER $$
 
 CREATE TRIGGER Trigger_Auditoria_Modificar_DetRec
-AFTER UPDATE ON Detalle_Productos_Recibos
+AFTER UPDATE ON Detalle_Recibos
 FOR EACH ROW
 BEGIN
   DECLARE accion VARCHAR(45);

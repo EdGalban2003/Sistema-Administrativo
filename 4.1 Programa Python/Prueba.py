@@ -1,9 +1,9 @@
 import mysql.connector
-from config import db_config  # Importa las variables de configuración desde config.py
+from config2 import db_config2  # Importa las variables de configuración desde config.py
 
 try:
     # Intentar conectar a la base de datos usando las variables de configuración importadas
-    conexion = mysql.connector.connect(**db_config)
+    conexion = mysql.connector.connect(**db_config2)
 
     # Si la conexión es exitosa, muestra un mensaje de éxito
     print("Conexión exitosa a la base de datos")
@@ -17,7 +17,7 @@ except mysql.connector.Error as e:
 
 try:
     # Nombre del nuevo usuario y su contraseña
-    nuevo_usuario = "UserGuest"
+    nuevo_usuario = "UserGuest4322"
     nueva_contrasena = "U$3rG#3stP@ss"
 
     # Comando SQL para crear un nuevo usuario
