@@ -3,16 +3,13 @@
 require('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\config.php');
 
 // Iniciar sesión o reanudar la sesión existente
+session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
 session_start();
 
 // Verificar si el usuario ya ha iniciado sesión
 if (!empty($_SESSION['nombre_usuario'])) {
     $nombre_usuario = $_SESSION['nombre_usuario'];
-} else {
-    // Si el usuario no ha iniciado sesión, redirige a la página de inicio de sesión
-    header("Location: login.php");
-    exit();
-}
+} 
 
 // Conexión a la base de datos
 $conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
@@ -25,14 +22,39 @@ if ($conn->connect_error) {
 $preguntas = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Resto del código para manejar la configuración de preguntas...
+    $pregunta_seleccionada_1 = $_POST['pregunta_seleccionada_1'];
+    $respuesta_1 = $_POST['respuesta_1'];
+    $pregunta_seleccionada_2 = $_POST['pregunta_seleccionada_2'];
+    $respuesta_2 = $_POST['respuesta_2'];
+    $pregunta_seleccionada_3 = $_POST['pregunta_seleccionada_3'];
+    $respuesta_3 = $_POST['respuesta_3'];
+
+    // Genera un salt para cada respuesta
+    $salt_1 = random_bytes(32);
+    $salt_2 = random_bytes(32);
+    $salt_3 = random_bytes(32);
+
+    // Calcula el hash de cada respuesta utilizando el salt correspondiente
+    $respuesta_hashed_1 = hash_pbkdf2("sha256", $respuesta_1, $salt_1, 100000, 32);
+    $respuesta_hashed_2 = hash_pbkdf2("sha256", $respuesta_2, $salt_2, 100000, 32);
+    $respuesta_hashed_3 = hash_pbkdf2("sha256", $respuesta_3, $salt_3, 100000, 32);
+
+    // Actualiza las preguntas y respuestas en la base de datos
+    $stmt = $conn->prepare("UPDATE usuarios SET Pregunta1 = ?, Respuesta1 = ?, Salt2 = ?, Pregunta2 = ?, Respuesta2 = ?, Salt3 = ?, Pregunta3 = ?, Respuesta3 = ?, Salt4 = ? WHERE Nombre_Usuario = ?");
+    $stmt->bind_param("ssssssssss", $pregunta_seleccionada_1, $respuesta_hashed_1, $salt_1, $pregunta_seleccionada_2, $respuesta_hashed_2, $salt_2, $pregunta_seleccionada_3, $respuesta_hashed_3, $salt_3, $nombre_usuario);
+
+    if ($stmt->execute()) {
+        echo "Preguntas y respuestas guardadas con éxito.";
+    } else {
+        echo "Error al guardar las preguntas y respuestas: " . $stmt->error;
+    }
+    $stmt->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Configurar Preguntas de Seguridad</title>
+    <title>Preguntas de Seguridad</title>
     <script>
         var selectedQuestions = [];
 
@@ -48,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "¿En qué país te gustaría vivir si pudieras elegir cualquiera?",
             "¿Cuál es tu plato de comida favorito?",
             "¿Cuál es tu libro favorito?"
-        };
+        ];
 
         function toggleOptions(preguntaField) {
             var select = document.getElementById(preguntaField);
@@ -84,11 +106,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h1>Configurar Preguntas de Seguridad</h1>
     <form method="post">
-        <label for="nombre_usuario">Nombre de usuario:</label>
-        <input type="text" name="nombre_usuario" value="<?php echo $nombre_usuario; ?>" readonly>
+        <label for="pregunta_seleccionada_1">Pregunta 1 seleccionada:</label>
+        <select id="pregunta_seleccionada_1" name="pregunta_seleccionada_1" onchange="selectPregunta(this, this.value)" required>
+            <option value="">Selecciona una pregunta</option>
+        </select>
+        <label for="respuesta_1">Respuesta 1:</label>
+        <input type="text" name="respuesta_1" required>
         <br>
-        <!-- Resto del formulario para configurar preguntas... -->
+        <label for="pregunta_seleccionada_2">Pregunta 2 seleccionada:</label>
+        <select id="pregunta_seleccionada_2" name="pregunta_seleccionada_2" onchange="selectPregunta(this, this.value)" required>
+            <option value="">Selecciona una pregunta</option>
+        </select>
+        <label for="respuesta_2">Respuesta 2:</label>
+        <input type="text" name="respuesta_2" required>
+        <br>
+        <label for="pregunta_seleccionada_3">Pregunta 3 seleccionada:</label>
+        <select id="pregunta_seleccionada_3" name="pregunta_seleccionada_3" onchange="selectPregunta(this, this.value)" required>
+            <option value="">Selecciona una pregunta</option>
+        </select>
+        <label for="respuesta_3">Respuesta 3:</label>
+        <input type="text" name="respuesta_3" required>
+        <br>
+        <button type="submit">Registrarse</button>
     </form>
+
     <script>
         enableAllOptions(); // Llamar a la función para cargar las opciones iniciales
     </script>
