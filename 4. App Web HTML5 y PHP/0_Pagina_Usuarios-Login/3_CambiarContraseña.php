@@ -9,73 +9,73 @@ session_start();
 // Conexión a la base de datos
 $conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
 
-// Resto del código de verificación de respuestas
-$mensaje = "";
-$cambiar_contrasena = false; // Variable para habilitar el cambio de contraseña
-
 // Obtén el nombre de usuario desde la sesión
 $nombre_usuario = $_SESSION['nombre_usuario'];
 
-// Recupera las preguntas almacenadas en la base de datos
-$stmt = $conn->prepare("SELECT Pregunta1, Pregunta2, Pregunta3, Respuesta1, Salt2, Respuesta2, Salt3, Respuesta3, Salt4 FROM usuarios WHERE Nombre_Usuario = ?");
-$stmt->bind_param("s", $nombre_usuario);
-$stmt->execute();
-$stmt->bind_result($pregunta1_db, $pregunta2_db, $pregunta3_db, $respuesta_hashed_1_db, $salt2_db, $respuesta_hashed_2_db, $salt3_db, $respuesta_hashed_3_db, $salt4_db);
-$stmt->fetch();
-$stmt->close();
-
+$mensaje = "";
 $iteraciones = 100000;  // Número de iteraciones
 $longitud_hash = 32;    // Longitud del hash
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $respuesta_1 = isset($_POST['respuesta_1']) ? $_POST['respuesta_1'] : "";
-    $respuesta_2 = isset($_POST['respuesta_2']) ? $_POST['respuesta_2'] : "";
-    $respuesta_3 = isset($_POST['respuesta_3']) ? $_POST['respuesta_3'] : "";
+    $contrasena_actual = $_POST['contrasena_actual'];
+    $nueva_contrasena = $_POST['nueva_contrasena'];
+    $confirmar_contrasena = $_POST['confirmar_contrasena'];
 
-    // Verifica las respuestas
-    $respuesta_hashed_1 = hash_pbkdf2("sha256", $respuesta_1, $salt2_db, $iteraciones, $longitud_hash);
-    $respuesta_hashed_2 = hash_pbkdf2("sha256", $respuesta_2, $salt3_db, $iteraciones, $longitud_hash);
-    $respuesta_hashed_3 = hash_pbkdf2("sha256", $respuesta_3, $salt4_db, $iteraciones, $longitud_hash);
+    // Obtén el hash y el salt de la contraseña actual del usuario
+    $stmt = $conn->prepare("SELECT Contraseña, Salt FROM usuarios WHERE Nombre_Usuario = ?");
+    $stmt->bind_param("s", $nombre_usuario);
+    $stmt->execute();
+    $stmt->bind_result($contrasena_actual_hashed, $salt_actual);
+    $stmt->fetch();
+    $stmt->close();
 
-    if (
-        hash_equals($respuesta_hashed_1_db, $respuesta_hashed_1) &&
-        hash_equals($respuesta_hashed_2_db, $respuesta_hashed_2) &&
-        hash_equals($respuesta_hashed_3_db, $respuesta_hashed_3)
-    ) {
-        $cambiar_contrasena = true;
-        $mensaje = "Respuestas correctas. Puedes cambiar tu contraseña a continuación.";
+    // Verifica si la contraseña actual es correcta
+    $contrasena_actual_hashed_input = hash_pbkdf2("sha256", $contrasena_actual, $salt_actual, $iteraciones, $longitud_hash);
+
+    if (hash_equals($contrasena_actual_hashed, $contrasena_actual_hashed_input)) {
+        // Verifica si la nueva contraseña y la confirmación coinciden
+        if ($nueva_contrasena === $confirmar_contrasena) {
+            // Genera un "salt" aleatorio para la nueva contraseña
+            $nuevo_salt = random_bytes(32);
+            $nueva_contrasena_hashed = hash_pbkdf2("sha256", $nueva_contrasena, $nuevo_salt, $iteraciones, $longitud_hash);
+
+            // Actualiza la contraseña en la base de datos
+            $stmt = $conn->prepare("UPDATE usuarios SET Contraseña = ?, Salt = ? WHERE Nombre_Usuario = ?");
+            $stmt->bind_param("sss", $nueva_contrasena_hashed, $nuevo_salt, $nombre_usuario);
+            if ($stmt->execute()) {
+                $mensaje = "Contraseña cambiada con éxito.";
+            } else {
+                $mensaje = "Error al cambiar la contraseña: " . $stmt->error;
+            }
+            $stmt->close();
+        } else {
+            $mensaje = "La nueva contraseña y la confirmación no coinciden.";
+        }
     } else {
-        $mensaje = "Respuestas incorrectas. No puedes cambiar la contraseña.";
+        $mensaje = "Contraseña actual incorrecta. No puedes cambiar la contraseña.";
     }
 }
-
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Verificar Respuestas</title>
+    <title>Cambiar Contraseña</title>
 </head>
 <body>
-    <h1>Verificar Respuestas</h1>
+    <h1>Cambiar Contraseña</h1>
     <?php if (!empty($mensaje)) { echo "<p>$mensaje</p>"; } ?>
-    <?php if ($cambiar_contrasena) { ?>
-        <!-- Agregar redirección a CambiarContrasena.php -->
-        <form method="post" action="CambiarContrasena.php">
-            <button type="submit">Cambiar Contraseña</button>
-        </form>
-    <?php } else { ?>
-        <form method="post">
-            <label for="pregunta_seleccionada_1"><?php echo $pregunta1_db; ?></label>
-            <input type="text" name="respuesta_1" required>
-            <br>
-            <label for="pregunta_seleccionada_2"><?php echo $pregunta2_db; ?></label>
-            <input type="text" name="respuesta_2" required>
-            <br>
-            <label for="pregunta_seleccionada_3"><?php echo $pregunta3_db; ?></label>
-            <input type="text" name="respuesta_3" required>
-            <br>
-            <button type="submit">Verificar Preguntas y Respuestas</button>
-        </form>
-    <?php } ?>
+    <form method="post">
+    <label for="contrasena_actual">Contraseña Actual:</label>
+    <input type="password" name="contrasena_actual" required>
+    <br>
+    <label for="nueva_contrasena">Nueva Contraseña:</label>
+    <input type="password" name="nueva_contrasena" required>
+    <br>
+    <label for="confirmar_contrasena">Confirmar Contraseña:</label>
+    <input type="password" name="confirmar_contrasena" required>
+    <br>
+    <button type="submit">Cambiar Contraseña</button>
+</form>
 </body>
 </html>
