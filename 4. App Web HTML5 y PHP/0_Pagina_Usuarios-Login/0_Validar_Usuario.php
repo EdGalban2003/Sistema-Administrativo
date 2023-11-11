@@ -1,5 +1,5 @@
 <?php
-require('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\config.php');
+require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nombre_usuario'])) {
     $nombre_usuario = $_POST['nombre_usuario'];

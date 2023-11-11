@@ -1,11 +1,13 @@
 <?php
-require('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\config.php');
+require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
 $conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
 
 if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
+
+$mensajeError = ''; // Variable para almacenar mensajes de error
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = $_POST['nombre'];
@@ -19,15 +21,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $errores = [];
 
     if (empty($nombre) || !preg_match("/^[A-Za-z]+$/", $nombre)) {
-        $errores[] = "El campo 'Nombre' es obligatorio y solo debe contener letras y no pueden haber espacios.";
+        $errores['nombre'] = "No se permiten espacios, solo letras.";
     }
 
     if (!empty($apellido) && !preg_match("/^[A-Za-z]+$/", $apellido)) {
-        $errores[] = "El campo 'Apellido' solo debe contener letras y no pueden haber espacios.";
+        $errores['apellido'] = "No se permiten espacios, solo letras.";
     }
 
     if (empty($nombre_usuario) || !preg_match("/^[A-Za-z0-9]+$/", $nombre_usuario)) {
-        $errores[] = "El campo 'Nombre de usuario' es obligatorio y solo debe contener letras y números.";
+        $errores['nombre_usuario'] = "No se permiten espacios, solo letras y números.";
     } else {
         // Verifica si el nombre de usuario ya está en uso
         $stmt = $conn->prepare("SELECT Nombre_Usuario FROM usuarios WHERE Nombre_Usuario = ?");
@@ -36,13 +38,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            $errores[] = "El nombre de usuario ya está en uso. Por favor, elige otro.";
+            $errores['nombre_usuario'] = "El nombre de usuario ya está en uso. Por favor, elige otro.";
         }
         $stmt->close();
     }
 
     if (empty($correo) || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-        $errores[] = "El campo 'Correo' es obligatorio y debe ser una dirección de correo válida.";
+        $errores['correo'] = "Solo se permiten correos que no estén en uso, solo correos, y sin espacios en el correo.";
     } else {
         // Verifica si el correo ya está en uso
         $stmt = $conn->prepare("SELECT Correo_Usuario FROM usuarios WHERE Correo_Usuario = ?");
@@ -51,17 +53,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            $errores[] = "El correo ya está en uso. Por favor, utiliza otro correo.";
+            $errores['correo'] = "El correo ya está en uso. Por favor, utiliza otro correo.";
         }
         $stmt->close();
     }
 
     if (empty($contrasena)) {
-        $errores[] = "El campo 'Contraseña' es obligatorio.";
+        $errores['contrasena'] = "Solo se permiten números, letras y signos.";
+    } elseif (strlen($contrasena) < 8 || strlen($contrasena) > 16) {
+        $errores['contrasena'] = "La contraseña debe tener entre 8 y 16 caracteres.";
+    } elseif (!preg_match("/^[A-Za-z0-9!@#$%^&*()_+{}:;<>,.?~\-]+$/", $contrasena)) {
+        $errores['contrasena'] = "Solo se permiten números, letras y los siguientes caracteres especiales: !@#$%^&*()_+{}:;<>,.?~\-";
     }
 
     if ($contrasena !== $contrasena_confirm) {
-        $errores[] = "Las contraseñas no coinciden. Intenta de nuevo.";
+        $errores['contrasena_confirm'] = "Las contraseñas no coinciden. Intenta de nuevo.";
     }
 
     if (empty($errores)) {
@@ -78,15 +84,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt->execute()) {
             echo "Usuario registrado con éxito.";
+            echo '<br><a href="1_Login.php">Iniciar Sesión</a>'; // Agregar enlace para iniciar sesión
         } else {
             echo "Error al registrar el usuario: " . $stmt->error;
         }
         $stmt->close();
     } else {
         // Muestra los errores al usuario
-        foreach ($errores as $error) {
-            echo $error . "<br>";
-        }
+        $mensajeError = implode("\n", $errores);
     }
 }
 ?>
@@ -121,25 +126,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h1>Registrarse</h1>
     <form method="post">
-        <label for="nombre">Nombre:</label>
-        <input type="text" name="nombre" id="nombre" required>
-        <br>
-        <label for="apellido">Apellido:</label>
-        <input type="text" name="apellido" id="apellido">
-        <br>
-        <label for="nombre_usuario">Nombre de usuario:</label>
-        <input type="text" name="nombre_usuario" id="nombre_usuario" required onblur="verificarUsuario()">
-        <span id="mensaje_usuario"></span>
-        <br>
-        <label for="correo">Correo:</label>
-        <input type="email" name="correo" id="correo" required>
-        <br>
-        <label for="contrasena">Contraseña:</label>
-        <input type="password" name="contrasena" id="contrasena" required>
-        <br>
-        <label for="contrasena_confirm">Confirma la contraseña:</label>
-        <input type="password" name="contrasena_confirm" id="contrasena_confirm" required>
-        <br>
+        <div class="campo">
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" id="nombre" required>
+            <?php if (isset($errores['nombre'])) : ?>
+                <div style="color: red;"><?php echo $errores['nombre']; ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="campo">
+            <label for="apellido">Apellido:</label>
+            <input type="text" name="apellido" id="apellido">
+            <?php if (isset($errores['apellido'])) : ?>
+                <div style="color: red;"><?php echo $errores['apellido']; ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="campo">
+            <label for="nombre_usuario">Nombre de usuario:</label>
+            <input type="text" name="nombre_usuario" id="nombre_usuario" required onblur="verificarUsuario()">
+            <span id="mensaje_usuario"></span>
+            <?php if (isset($errores['nombre_usuario'])) : ?>
+                <div style="color: red;"><?php echo $errores['nombre_usuario']; ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="campo">
+            <label for="correo">Correo:</label>
+            <input type="email" name="correo" id="correo" required>
+            <?php if (isset($errores['correo'])) : ?>
+                <div style="color: red;"><?php echo $errores['correo']; ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="campo">
+            <label for="contrasena">Contraseña:</label>
+            <input type="password" name="contrasena" id="contrasena" pattern="^[A-Za-z0-9!@#$%^&*()_+{}:;<>,.?~\-]+$" title="Solo se permiten números, letras y los siguientes caracteres especiales: !@#$%^&*()_+{}:;<>,.?~\-"
+                minlength="8" maxlength="16" required>
+            <?php if (isset($errores['contrasena'])) : ?>
+                <div style="color: red;"><?php echo $errores['contrasena']; ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="campo">
+            <label for="contrasena_confirm">Confirma la contraseña:</label>
+            <input type="password" name="contrasena_confirm" id="contrasena_confirm" required>
+            <?php if (isset($errores['contrasena_confirm'])) : ?>
+                <div style="color: red;"><?php echo $errores['contrasena_confirm']; ?></div>
+            <?php endif; ?>
+        </div>
+
         <button type="submit">Registrarse</button>
     </form>
 </body>
