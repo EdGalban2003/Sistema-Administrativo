@@ -177,7 +177,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <button type="submit">Registrarse</button>
+
     </form>
+    
+    <!-- Botón de inicio de sesion -->
+    <a href="1_Login.php">Iniciar Sesion</a>
+
 </body>
 </html>
 

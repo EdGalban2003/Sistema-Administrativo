@@ -56,11 +56,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Verificar Respuestas</title>
 </head>
 <body>
-    <h1>Verificar Respuestas</h1>
+    <h1>Verificar Respuestas Usuario</h1>
     <?php if (!empty($mensaje)) { echo "<p>$mensaje</p>"; } ?>
     <?php if ($cambiar_contrasena) { ?>
         <!-- Agregar redirección a CambiarContrasena.php -->
-        <form method="post" action="6_RecuperarContraseña.php">
+        <form method="post" action="6_CambiarContraseñaUsario.php">
             <button type="submit">Cambiar Contraseña</button>
         </form>
     <?php } else { ?>
@@ -76,6 +76,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <br>
             <button type="submit">Verificar Preguntas y Respuestas</button>
         </form>
-    <?php } ?>
+
+        <br>
+        <!-- Agrega el botón de "Volver" -->
+        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/1_Menu_Usarios_Opciones.html"><button type="button">Volver</button></a>
+
+    <?php 
+    } 
+    ?>
 </body>
 </html>

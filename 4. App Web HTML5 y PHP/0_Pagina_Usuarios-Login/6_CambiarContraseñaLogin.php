@@ -31,6 +31,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($stmt->execute()) {
                 $mensaje = "Contraseña cambiada con éxito.";
+
+                // Cerrar la sesión al cambiar la contraseña con éxito
+                session_unset();
+                session_destroy();
             } else {
                 $mensaje = "Error al cambiar la contraseña: " . $stmt->error;
             }
@@ -41,6 +45,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// Agrega la lógica para cerrar la sesión al presionar "Volver"
+if (isset($_GET['cerrar_sesion'])) {
+    session_unset();
+    session_destroy();
+    header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/1_Login.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -48,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Cambiar Contraseña</title>
 </head>
 <body>
-    <h1>Cambiar Contraseña</h1>
+    <h1>Cambiar Contraseña Login</h1>
     <?php if (!empty($mensaje)) { echo "<p>$mensaje</p>"; } ?>
     <form method="post">
         <label for="nueva_contrasena">Nueva Contraseña:</label>
@@ -59,5 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <br>
         <button type="submit">Cambiar Contraseña</button>
     </form>
+
+    <br>
+    <!-- Agrega el botón de "Volver" con un parámetro para cerrar la sesión -->
+    <a href="?cerrar_sesion=1"><button type="button">Volver</button></a>
 </body>
 </html>

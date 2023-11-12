@@ -1,6 +1,6 @@
 <?php
 // Incluye el archivo de configuración
-require('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\config.php');
+require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
 // Iniciar sesión o reanudar la sesión existente
 session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
@@ -82,5 +82,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <br>
         <button type="submit">Cambiar Contraseña</button>
     </form>
+
+    <br>
+        <!-- Agrega el botón de "Volver" -->
+        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/1_Menu_Usarios_Opciones.html"><button type="button">Volver</button></a>
+
 </body>
 </html>

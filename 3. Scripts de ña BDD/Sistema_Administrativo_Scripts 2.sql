@@ -189,14 +189,14 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Usuarios` (
   `Fecha_Registro` DATE NOT NULL,
   `Hora_Registro` TIME NOT NULL,
   `Pregunta1` VARCHAR(255) NULL,
-  `Respuesta1` VARCHAR(45) NULL,
+  `Respuesta1` VARBINARY(32) NULL,
   `Salt2` VARBINARY(32) NULL,
   `Pregunta2` VARCHAR(255) NULL,
   `Salt3` VARBINARY(32) NULL,
-  `Respuesta2` VARCHAR(45) NULL,
+  `Respuesta2` VARBINARY(32) NULL,
   `Pregunta3` VARCHAR(255) NULL,
   `Salt4` VARBINARY(32) NULL,
-  `Respuesta3` VARCHAR(45) NULL,
+  `Respuesta3` VARBINARY(32) NULL,
   PRIMARY KEY (`ID_Usuario`),
   UNIQUE INDEX `Nombre_Usuario_UNIQUE` (`Nombre_Usuario` ASC) )
 ENGINE = InnoDB;

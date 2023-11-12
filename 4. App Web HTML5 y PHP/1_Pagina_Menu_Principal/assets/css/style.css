@@ -1,0 +1,109 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-family: "Open Sans", sans-serif;
+}
+
+body{
+    background-color: #ffffff;
+    background-image: url(../img/Captura\ 2.PNG);
+    background-repeat: no-repeat;
+    background-size: 60%;
+    background-position-x: 55%;
+    background-position-y: 4em;
+}
+
+header{
+    width: 100%;
+    height: 90px;
+    background-color: rgb(208, 255, 255);
+}
+
+.interior{
+    max-width: 100%;
+    padding: 0 10px;
+    margin: auto;
+}
+.logo{
+    float: left;
+    padding: 5px 20px 0;
+}
+.logo img{
+    height: 80px;
+}
+.logo img:hover{
+    transform: scale(1.1);
+}
+.navegacion{
+    float: right;
+    display: flex;
+    align-items: center;
+    min-height: 90px;
+    z-index: 1000;
+}
+.navegacion ul{
+    list-style: none;
+    padding: 0 10px;
+}
+.navegacion ul li{
+    display: inline-block;
+    position: relative;
+    transition: .3s linear;
+    z-index: 1000;
+}
+.navegacion ul li:hover{
+    transform: scale(1.1);
+}
+.navegacion ul li a{
+    color: #0b132b;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 12px 20px;
+    transition: .3 linear;
+    /* border-top: 1px solid transparent; */
+}
+.navegacion ul li a:hover{
+    
+    color: #00c9bd;
+    transform: scale(1.1);
+    /* border-top: 1px solid #00c9bd; */
+}
+.navegacion ul li:hover .hijos{
+    display: block;
+}
+
+.navegacion .submenu .hijos{
+    display: none;
+    background: rgba(241, 241, 241, 0.5);
+    position: absolute;
+    width: 166px;
+    border: 1px solid rgb(194, 194, 194);
+}
+
+.navegacion .submenu .hijos.user {
+    /* Estilos específicos para el submenú de usuario */
+    display: none;
+    background: rgba(241, 241, 241, 0.5);
+    position: absolute;
+    width: 166px;
+    border: 1px solid rgb(194, 194, 194);
+    left: -93px; /* Ajusta este valor según sea necesario */
+}
+
+.navegacion ul li:hover .hijos.user {
+    display: block;
+}
+
+.navegacion .submenu .hijos li{
+    display: block;
+    overflow: hidden;
+    border-bottom: 1px solid #00c9bd;
+}
+.navegacion .submenu .hijos li a{
+    display: block;
+}
+

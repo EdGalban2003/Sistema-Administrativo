@@ -127,8 +127,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <label for="respuesta_3">Respuesta 3:</label>
         <input type="text" name="respuesta_3" required>
         <br>
-        <button type="submit">Registrarse</button>
+        <button type="submit">Registrar</button>
     </form>
+
+    <br>
+        <!-- Agrega el botón de "Volver" -->
+        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/1_Menu_Usarios_Opciones.html"><button type="button">Volver</button></a>
 
     <script>
         enableAllOptions(); // Llamar a la función para cargar las opciones iniciales
