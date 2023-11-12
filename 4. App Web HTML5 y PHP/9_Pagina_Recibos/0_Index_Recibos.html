@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Recibos</title>
+</head>
+<body>
+    <div>
+        <h2>Página de Recibos</h2>
+        <form id="formularioRecibo">
+            <label for="codigoRecibo">Código del Recibo:</label>
+            <input type="text" id="codigoRecibo" required>
+            <label for="nombreCliente">Nombre del Cliente:</label>
+            <input type="text" id="nombreCliente" required>
+            <label for="monto">Monto:</label>
+            <input type="text" id="monto" required>
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha" required>
+            <button type="button" onclick="verificarRecibo()">Verificar Recibo</button>
+            <button type="button" onclick="añadirRecibo()">Añadir Recibo</button>
+            <button type="button" onclick="cancelarRecibo()">Cancelar Recibo</button>
+        </form>
+        <button type="button" onclick="consultarRecibos()">Consultar Recibos</button>
+        <div id="recibosGenerados">
+            <!-- Aquí se mostrarán dinámicamente los recibos generados -->
+        </div>
+    </div>
+
+    <script>
+        function verificarRecibo() {
+            var codigoRecibo = document.getElementById("codigoRecibo").value;
+            // Lógica de verificación, puedes personalizar según tus necesidades
+            alert("Verificación de recibo para el código: " + codigoRecibo);
+        }
+
+        function añadirRecibo() {
+            var codigoRecibo = document.getElementById("codigoRecibo").value;
+            var nombreCliente = document.getElementById("nombreCliente").value;
+            var monto = document.getElementById("monto").value;
+            var fecha = document.getElementById("fecha").value;
+
+            var reciboHTML = `
+                <div>
+                    <h3>Recibo #${codigoRecibo}</h3>
+                    <p><strong>Nombre del Cliente:</strong> ${nombreCliente}</p>
+                    <p><strong>Monto:</strong> ${monto}</p>
+                    <p><strong>Fecha:</strong> ${fecha}</p>
+                </div>
+                <hr>
+            `;
+
+            document.getElementById("recibosGenerados").insertAdjacentHTML('beforeend', reciboHTML);
+
+            // Limpiar los campos del formulario
+            document.getElementById("codigoRecibo").value = "";
+            document.getElementById("nombreCliente").value = "";
+            document.getElementById("monto").value = "";
+            document.getElementById("fecha").value = "";
+        }
+
+        function cancelarRecibo() {
+            var codigoRecibo = document.getElementById("codigoRecibo").value;
+            // Lógica de cancelación, puedes personalizar según tus necesidades
+            alert("Cancelación de recibo para el código: " + codigoRecibo);
+        }
+
+        function consultarRecibos() {
+            var recibos = document.getElementById("recibosGenerados").children;
+
+            if (recibos.length > 0) {
+                for (var i = 0; i < recibos.length; i++) {
+                    console.log(recibos[i].innerText);
+                }
+            } else {
+                alert("No hay recibos para mostrar.");
+            }
+        }
+    </script>
+</body>
+</html>
