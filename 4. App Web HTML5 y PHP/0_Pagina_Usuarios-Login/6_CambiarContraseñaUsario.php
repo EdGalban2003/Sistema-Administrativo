@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <br>
         <!-- Agrega el botón de "Volver" -->
-        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/1_Menu_Usarios_Opciones.html"><button type="button">Volver</button></a>
+        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/0_Menu_Usarios_Opciones.html"><button type="button">Volver</button></a>
 
 </body>
 </html>

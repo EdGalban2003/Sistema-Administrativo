@@ -203,44 +203,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Sistema_Administrativo`.`Roles`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Roles` (
-  `ID_Rol` INT NOT NULL AUTO_INCREMENT,
-  `Nombre_Rol` VARCHAR(45) NOT NULL,
-  `Descripcion_Rol` TEXT NULL,
-  `Usuarios_ID_Usuario` INT NOT NULL,
-  PRIMARY KEY (`ID_Rol`, `Usuarios_ID_Usuario`),
-  INDEX `fk_Roles_Usuarios1_idx` (`Usuarios_ID_Usuario` ASC) ,
-  UNIQUE INDEX `Nombre_Rol_UNIQUE` (`Nombre_Rol` ASC) ,
-  CONSTRAINT `fk_Roles_Usuarios1`
-    FOREIGN KEY (`Usuarios_ID_Usuario`)
-    REFERENCES `Sistema_Administrativo`.`Usuarios` (`ID_Usuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `Sistema_Administrativo`.`Permisos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Permisos` (
-  `ID_Permiso` INT NOT NULL AUTO_INCREMENT,
-  `Nombre_Permiso` VARCHAR(45) NOT NULL,
-  `Descripcion_Permiso` TEXT NULL,
-  `Usuarios_ID_Usuario` INT NOT NULL,
-  PRIMARY KEY (`ID_Permiso`, `Usuarios_ID_Usuario`),
-  INDEX `fk_Permisos_Usuarios1_idx` (`Usuarios_ID_Usuario` ASC) ,
-  UNIQUE INDEX `Nombre_Permiso_UNIQUE` (`Nombre_Permiso` ASC) ,
-  CONSTRAINT `fk_Permisos_Usuarios1`
-    FOREIGN KEY (`Usuarios_ID_Usuario`)
-    REFERENCES `Sistema_Administrativo`.`Usuarios` (`ID_Usuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `Sistema_Administrativo`.`CierreCaja`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`CierreCaja` (
@@ -253,14 +215,7 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`CierreCaja` (
   `Transferencia_Bancaria` DECIMAL(10,2) NULL,
   `Monto_Total` DECIMAL(10,2) NOT NULL,
   `Detalles` TEXT NULL,
-  `Usuarios_ID_Usuario` INT NOT NULL,
-  PRIMARY KEY (`ID_CierreCaja`, `Usuarios_ID_Usuario`),
-  INDEX `fk_CierreCaja_Usuarios1_idx` (`Usuarios_ID_Usuario` ASC) ,
-  CONSTRAINT `fk_CierreCaja_Usuarios1`
-    FOREIGN KEY (`Usuarios_ID_Usuario`)
-    REFERENCES `Sistema_Administrativo`.`Usuarios` (`ID_Usuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  PRIMARY KEY (`ID_CierreCaja`))
 ENGINE = InnoDB;
 
 
@@ -475,6 +430,50 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Recibos_has_Forma_de_Pago` 
   CONSTRAINT `fk_Recibos_has_Forma_de_Pago_Forma_de_Pago1`
     FOREIGN KEY (`Forma_de_Pago_ID_FormaPago`)
     REFERENCES `Sistema_Administrativo`.`Forma_de_Pago` (`ID_FormaPago`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Sistema_Administrativo`.`Usuarios_has_CierreCaja`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Usuarios_has_CierreCaja` (
+  `Usuarios_ID_Usuario` INT NOT NULL,
+  `CierreCaja_ID_CierreCaja` INT NOT NULL,
+  PRIMARY KEY (`Usuarios_ID_Usuario`, `CierreCaja_ID_CierreCaja`),
+  INDEX `fk_Usuarios_has_CierreCaja_CierreCaja1_idx` (`CierreCaja_ID_CierreCaja` ASC) ,
+  INDEX `fk_Usuarios_has_CierreCaja_Usuarios1_idx` (`Usuarios_ID_Usuario` ASC) ,
+  CONSTRAINT `fk_Usuarios_has_CierreCaja_Usuarios1`
+    FOREIGN KEY (`Usuarios_ID_Usuario`)
+    REFERENCES `Sistema_Administrativo`.`Usuarios` (`ID_Usuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Usuarios_has_CierreCaja_CierreCaja1`
+    FOREIGN KEY (`CierreCaja_ID_CierreCaja`)
+    REFERENCES `Sistema_Administrativo`.`CierreCaja` (`ID_CierreCaja`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Sistema_Administrativo`.`Sesiones`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Sesiones` (
+  `ID_Sesiones` INT NOT NULL,
+  `ID_Usuario` VARCHAR(45) NULL,
+  `Token_Sesion` VARCHAR(255) NULL,
+  `Fecha_Inicio` DATE NULL,
+  `Hora_Inicio` TIME NULL,
+  `Direccion_IP` VARCHAR(45) NULL,
+  `Usuarios_ID_Usuario` INT NOT NULL,
+  PRIMARY KEY (`ID_Sesiones`, `Usuarios_ID_Usuario`),
+  UNIQUE INDEX `ID_Usuario_UNIQUE` (`ID_Usuario` ASC) ,
+  INDEX `fk_Sesiones_Usuarios1_idx` (`Usuarios_ID_Usuario` ASC) ,
+  CONSTRAINT `fk_Sesiones_Usuarios1`
+    FOREIGN KEY (`Usuarios_ID_Usuario`)
+    REFERENCES `Sistema_Administrativo`.`Usuarios` (`ID_Usuario`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

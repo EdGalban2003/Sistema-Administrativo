@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($resultado->num_rows > 0) {
             // Si el nombre de usuario existe, establece la sesión y redirige
             $_SESSION['nombre_usuario'] = $nombre_usuario;
-            header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/0_Index_MenuPrincipal.html");
+            header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/5_VerificarPreguntasLogin.php");
             exit;
         } else {
             // Si el nombre de usuario no existe, muestra un mensaje de error

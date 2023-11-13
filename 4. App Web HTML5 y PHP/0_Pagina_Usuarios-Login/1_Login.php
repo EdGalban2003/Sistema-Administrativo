@@ -16,8 +16,11 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-// Inicializar el contador de intentos fallidos si no existe en el archivo
-$intentos_fallidos = isset($intentos_fallidos) ? $intentos_fallidos : 0;
+// Obtener la dirección IP del usuario
+$ip_address = $_SERVER['REMOTE_ADDR'];
+
+// Inicializar el contador de intentos fallidos por IP si no existe en el archivo
+$intentos_fallidos = isset($intentos_fallidos_por_ip[$ip_address]) ? $intentos_fallidos_por_ip[$ip_address] : 0;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre_usuario = $_POST['nombre_usuario'];
@@ -50,11 +53,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $contrasena_proveida_hashed = hash_pbkdf2("sha256", $contrasena_bytes, $salt, $iteraciones, $longitud_hash);
 
             if ($contrasena_proveida_hashed == $contrasena_hashed) {
-               
                 header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/0_Index_MenuPrincipal.html");
                 exit;
             } else {
-                // Incrementar los intentos fallidos
+                // Incrementar los intentos fallidos por IP
                 $intentos_fallidos++;
 
                 $errores['contrasena'] = "Contraseña incorrecta";
@@ -69,6 +71,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errores['nombre_usuario'] = "Nombre de usuario no encontrado";
         }
     }
+    
+    // Almacenar el contador actualizado en la variable de intentos fallidos por IP
+    $intentos_fallidos_por_ip[$ip_address] = $intentos_fallidos;
 }
 ?>
 

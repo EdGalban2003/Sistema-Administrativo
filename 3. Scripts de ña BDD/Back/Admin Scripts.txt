@@ -1,0 +1,1 @@
+http://localhost/phpmyadmin/index.php?route=/server/privileges&db=sistema_administrativo&checkprivsdb=sistema_administrativo&viewing_mode=db

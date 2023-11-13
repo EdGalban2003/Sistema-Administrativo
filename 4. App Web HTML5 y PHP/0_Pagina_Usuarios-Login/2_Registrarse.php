@@ -84,7 +84,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt->execute()) {
             echo "Usuario registrado con éxito.";
-            echo '<br><a href="1_Login.php">Iniciar Sesión</a>'; // Agregar enlace para iniciar sesión
         } else {
             echo "Error al registrar el usuario: " . $stmt->error;
         }
