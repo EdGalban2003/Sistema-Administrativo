@@ -4,11 +4,6 @@ require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 // Configurar la ubicación personalizada para los archivos de sesión
 session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
 
-// Inicia la sesión solo si no está iniciada
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
 // Verifica si ya hay una sesión activa
 if (isset($_SESSION['nombre_usuario'])) {
     header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/0_Index_MenuPrincipal.html");
@@ -21,12 +16,8 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-function bloquearUsuario($usuario) {
-    // Configura una cookie indicando que el usuario está bloqueado
-    setcookie('usuario_bloqueado', true, time() + 30, '/');
-    header("Location: 1.1_Bloquear_Usuario.php");
-    exit;
-}
+// Inicializar el contador de intentos fallidos si no existe en el archivo
+$intentos_fallidos = isset($intentos_fallidos) ? $intentos_fallidos : 0;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre_usuario = $_POST['nombre_usuario'];
@@ -34,8 +25,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $errores = [];
 
+    // Validación del nombre de usuario
     if (!preg_match("/^[A-Za-z0-9]+$/", $nombre_usuario)) {
         $errores['nombre_usuario'] = "Nombre de usuario solo debe contener letras y números.";
+    }
+
+    // Validación de la contraseña
+    if (!preg_match("/^[A-Za-z0-9!@#$%^&*()_]{8,16}$/", $contrasena)) {
+        $errores['contrasena'] = "Contraseña incorrecta. Debe contener entre 8 y 16 caracteres, incluyendo letras, números y algunos caracteres especiales.";
     }
 
     if (empty($errores)) {
@@ -53,19 +50,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $contrasena_proveida_hashed = hash_pbkdf2("sha256", $contrasena_bytes, $salt, $iteraciones, $longitud_hash);
 
             if ($contrasena_proveida_hashed == $contrasena_hashed) {
-                // Elimina la cookie de bloqueo si existe
-                setcookie('usuario_bloqueado', '', time() - 3600, '/');
-
-                // Inicia la sesión y guarda el nombre de usuario actual
-                $_SESSION['nombre_usuario'] = $nombre_usuario;
-
-                // Resto del código de inicio de sesión aquí...
-
+               
                 header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/0_Index_MenuPrincipal.html");
                 exit;
             } else {
-                bloquearUsuario($nombre_usuario);
+                // Incrementar los intentos fallidos
+                $intentos_fallidos++;
+
                 $errores['contrasena'] = "Contraseña incorrecta";
+
+                // Verificar si el usuario está bloqueado después de tres intentos
+                if ($intentos_fallidos >= 3) {
+                    include '1.1_Bloquear_Usuario.php';
+                    exit;
+                }
             }
         } else {
             $errores['nombre_usuario'] = "Nombre de usuario no encontrado";

@@ -12,6 +12,11 @@
     </style>
 </head>
 <body>
+    <?php
+    // Recupera la cantidad de intentos fallidos de la URL
+    $intentos_fallidos = isset($_GET['intentos']) ? intval($_GET['intentos']) : 0;
+    ?>
+
     <h1>Usuario Bloqueado</h1>
     <p>Has excedido el límite de intentos. Tu cuenta está bloqueada temporalmente.</p>
     <p>Por favor, contacta con soporte o restablece tu contraseña.</p>
