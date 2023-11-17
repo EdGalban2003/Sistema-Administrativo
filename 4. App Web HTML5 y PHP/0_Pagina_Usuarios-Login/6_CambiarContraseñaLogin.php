@@ -2,10 +2,6 @@
 // Incluye el archivo de configuración
 require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
-// Iniciar sesión o reanudar la sesión existente
-session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
-session_start();
-
 // Conexión a la base de datos
 $conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
 
@@ -14,45 +10,54 @@ $mensaje = "";
 $iteraciones = 100000;  // Número de iteraciones
 $longitud_hash = 32;    // Longitud del hash
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['nueva_contrasena']) && isset($_POST['nueva_contrasena_confirm'])) {
-        $nueva_contrasena = $_POST['nueva_contrasena'];
-        $nueva_contrasena_confirm = $_POST['nueva_contrasena_confirm'];
+// Obtén el nombre de usuario desde la tabla temporal
+$sql_temporal = "SELECT Nombre_Usuario FROM Usuarios_Temporales WHERE ID_UsuariosTemporales > 1";
+$resultado_temporal = $conn->query($sql_temporal);
 
-        if ($nueva_contrasena === $nueva_contrasena_confirm) {
-            // Realiza el cambio de contraseña
-            $nueva_contrasena_bytes = $nueva_contrasena;
-            $nuevo_salt = random_bytes(32);
-            $nueva_contrasena_hashed = hash_pbkdf2("sha256", $nueva_contrasena_bytes, $nuevo_salt, $iteraciones, $longitud_hash);
+if ($resultado_temporal->num_rows > 0) {
+    $fila_temporal = $resultado_temporal->fetch_assoc();
+    $nombre_usuario = $fila_temporal['Nombre_Usuario'];
 
-            // Actualiza la contraseña en la base de datos
-            $stmt = $conn->prepare("UPDATE usuarios SET Contraseña = ?, Salt = ? WHERE Nombre_Usuario = ?");
-            $stmt->bind_param("sss", $nueva_contrasena_hashed, $nuevo_salt, $nombre_usuario);
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (isset($_POST['nueva_contrasena']) && isset($_POST['nueva_contrasena_confirm'])) {
+            $nueva_contrasena = $_POST['nueva_contrasena'];
+            $nueva_contrasena_confirm = $_POST['nueva_contrasena_confirm'];
 
-            if ($stmt->execute()) {
-                $mensaje = "Contraseña cambiada con éxito.";
+            if ($nueva_contrasena === $nueva_contrasena_confirm) {
+                // Realiza el cambio de contraseña
+                $nueva_contrasena_bytes = $nueva_contrasena;
+                $nuevo_salt = random_bytes(32);
+                $nueva_contrasena_hashed = hash_pbkdf2("sha256", $nueva_contrasena_bytes, $nuevo_salt, $iteraciones, $longitud_hash);
 
-                // Cerrar la sesión al cambiar la contraseña con éxito
-                session_unset();
-                session_destroy();
+                // Actualiza la contraseña en la base de datos
+                $stmt = $conn->prepare("UPDATE usuarios SET Contraseña = ?, Salt = ? WHERE Nombre_Usuario = ?");
+                $stmt->bind_param("sss", $nueva_contrasena_hashed, $nuevo_salt, $nombre_usuario);
+
+                if ($stmt->execute()) {
+                    $mensaje = "Contraseña cambiada con éxito.";
+
+                    // Elimina el registro de la tabla Usuarios_Temporales
+                    $stmt_delete = $conn->prepare("DELETE FROM Usuarios_Temporales WHERE ID_UsuariosTemporales > 0");
+                    $stmt_delete->execute();
+                    $stmt_delete->close();
+
+                    // Cerrar la sesión al cambiar la contraseña con éxito
+                    header("Location: 1_Login.php");
+                    exit;
+                } else {
+                    $mensaje = "Error al cambiar la contraseña: " . $stmt->error;
+                }
+                $stmt->close();
             } else {
-                $mensaje = "Error al cambiar la contraseña: " . $stmt->error;
+                $mensaje = "Las contraseñas no coinciden. Intenta de nuevo.";
             }
-            $stmt->close();
-        } else {
-            $mensaje = "Las contraseñas no coinciden. Intenta de nuevo.";
         }
     }
-}
-
-// Agrega la lógica para cerrar la sesión al presionar "Volver"
-if (isset($_GET['cerrar_sesion'])) {
-    session_unset();
-    session_destroy();
-    header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/1_Login.php");
-    exit;
+} else {
+    $mensaje = "No se ha obtenido un nombre de usuario desde la tabla temporal.";
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -70,9 +75,5 @@ if (isset($_GET['cerrar_sesion'])) {
         <br>
         <button type="submit">Cambiar Contraseña</button>
     </form>
-
-    <br>
-    <!-- Agrega el botón de "Volver" con un parámetro para cerrar la sesión -->
-    <a href="?cerrar_sesion=1"><button type="button">Volver</button></a>
 </body>
 </html>

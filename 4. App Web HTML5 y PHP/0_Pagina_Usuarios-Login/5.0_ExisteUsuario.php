@@ -2,10 +2,6 @@
 // Incluye el archivo de configuración para la conexión a la base de datos
 require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
-// Inicia la sesión
-session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
-session_start();
-
 // Conexión a la base de datos
 $conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
 
@@ -25,9 +21,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Verifica si hay al menos una fila en el resultado
         if ($resultado->num_rows > 0) {
-            // Si el nombre de usuario existe, establece la sesión y redirige
-            $_SESSION['nombre_usuario'] = $nombre_usuario;
-            header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/5_VerificarPreguntasLogin.php");
+            // Si el nombre de usuario existe, guarda el nombre de usuario en la tabla temporal
+            $sql = "INSERT INTO usuarios_temporales (nombre_usuario) VALUES ('$nombre_usuario')";
+            $conn->query($sql);
+
+            // Redirige a la segunda página
+            header("Location: 5_VerificarPreguntasLogin.php");
             exit;
         } else {
             // Si el nombre de usuario no existe, muestra un mensaje de error
@@ -64,8 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit">Aceptar</button>
         <br>
         <!-- Agrega el botón de "Volver" -->
-        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/1_Login.php"><button type="button">Volver</button></a>
-        
+        <a href="1_Login.php"><button type="button">Volver</button></a>
     </form>
 </body>
 </html>

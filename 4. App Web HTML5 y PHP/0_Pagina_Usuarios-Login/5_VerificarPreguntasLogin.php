@@ -2,10 +2,6 @@
 // Incluye el archivo de configuración
 require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
-// Iniciar sesión o reanudar la sesión existente
-session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
-session_start();
-
 // Conexión a la base de datos
 $conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
 
@@ -13,43 +9,69 @@ $conn = new mysqli($db_config['host'], $db_config['username'], $db_config['passw
 $mensaje = "";
 $cambiar_contrasena = false; // Variable para habilitar el cambio de contraseña
 
-// Obtén el nombre de usuario desde la sesión
-$nombre_usuario = $_SESSION['nombre_usuario'];
+// Obtén el nombre de usuario desde la tabla temporal
+$sql_temporal = "SELECT Nombre_Usuario FROM Usuarios_Temporales";
+$resultado_temporal = $conn->query($sql_temporal);
 
-// Recupera las preguntas almacenadas en la base de datos
-$stmt = $conn->prepare("SELECT Pregunta1, Pregunta2, Pregunta3, Respuesta1, Salt2, Respuesta2, Salt3, Respuesta3, Salt4 FROM usuarios WHERE Nombre_Usuario = ?");
-$stmt->bind_param("s", $nombre_usuario);
-$stmt->execute();
-$stmt->bind_result($pregunta1_db, $pregunta2_db, $pregunta3_db, $respuesta_hashed_1_db, $salt2_db, $respuesta_hashed_2_db, $salt3_db, $respuesta_hashed_3_db, $salt4_db);
-$stmt->fetch();
-$stmt->close();
+if ($resultado_temporal->num_rows > 0) {
+    $fila_temporal = $resultado_temporal->fetch_assoc();
+    $nombre_usuario = $fila_temporal['Nombre_Usuario'];
 
-$iteraciones = 100000;  // Número de iteraciones
-$longitud_hash = 32;    // Longitud del hash
+    // Verifica si se ha obtenido un nombre de usuario
+    if (!empty($nombre_usuario)) {
+        // Recupera las preguntas y respuestas almacenadas en la base de datos
+        $stmt = $conn->prepare("SELECT Pregunta1, Pregunta2, Pregunta3, Respuesta1, Salt2, Respuesta2, Salt3, Respuesta3, Salt4 FROM usuarios WHERE Nombre_Usuario = ?");
+        $stmt->bind_param("s", $nombre_usuario);
+        $stmt->execute();
+        $stmt->bind_result($pregunta1_db, $pregunta2_db, $pregunta3_db, $respuesta_hashed_1_db, $salt2_db, $respuesta_hashed_2_db, $salt3_db, $respuesta_hashed_3_db, $salt4_db);
+        $stmt->fetch();
+        $stmt->close();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $respuesta_1 = isset($_POST['respuesta_1']) ? $_POST['respuesta_1'] : "";
-    $respuesta_2 = isset($_POST['respuesta_2']) ? $_POST['respuesta_2'] : "";
-    $respuesta_3 = isset($_POST['respuesta_3']) ? $_POST['respuesta_3'] : "";
+        $iteraciones = 100000;  // Número de iteraciones
+        $longitud_hash = 32;    // Longitud del hash
 
-    // Verifica las respuestas
-    $respuesta_hashed_1 = hash_pbkdf2("sha256", $respuesta_1, $salt2_db, $iteraciones, $longitud_hash);
-    $respuesta_hashed_2 = hash_pbkdf2("sha256", $respuesta_2, $salt3_db, $iteraciones, $longitud_hash);
-    $respuesta_hashed_3 = hash_pbkdf2("sha256", $respuesta_3, $salt4_db, $iteraciones, $longitud_hash);
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $respuesta_1 = isset($_POST['respuesta_1']) ? $_POST['respuesta_1'] : "";
+            $respuesta_2 = isset($_POST['respuesta_2']) ? $_POST['respuesta_2'] : "";
+            $respuesta_3 = isset($_POST['respuesta_3']) ? $_POST['respuesta_3'] : "";
 
-    if (
-        hash_equals($respuesta_hashed_1_db, $respuesta_hashed_1) &&
-        hash_equals($respuesta_hashed_2_db, $respuesta_hashed_2) &&
-        hash_equals($respuesta_hashed_3_db, $respuesta_hashed_3)
-    ) {
-        $cambiar_contrasena = true;
-        $mensaje = "Respuestas correctas. Puedes cambiar tu contraseña a continuación.";
+            // Verifica si las preguntas y respuestas almacenadas no son nulas antes de comparar
+            if (
+                $pregunta1_db !== null &&
+                $pregunta2_db !== null &&
+                $pregunta3_db !== null &&
+                $respuesta_hashed_1_db !== null &&
+                $respuesta_hashed_2_db !== null &&
+                $respuesta_hashed_3_db !== null
+            ) {
+                // Verifica las respuestas
+                $respuesta_hashed_1 = hash_pbkdf2("sha256", $respuesta_1, $salt2_db, $iteraciones, $longitud_hash);
+                $respuesta_hashed_2 = hash_pbkdf2("sha256", $respuesta_2, $salt3_db, $iteraciones, $longitud_hash);
+                $respuesta_hashed_3 = hash_pbkdf2("sha256", $respuesta_3, $salt4_db, $iteraciones, $longitud_hash);
+
+                // Verifica si las respuestas coinciden
+                if (
+                    hash_equals($respuesta_hashed_1_db, $respuesta_hashed_1) &&
+                    hash_equals($respuesta_hashed_2_db, $respuesta_hashed_2) &&
+                    hash_equals($respuesta_hashed_3_db, $respuesta_hashed_3)
+                ) {
+                    $cambiar_contrasena = true;
+                    $mensaje = "Respuestas correctas. Puedes cambiar tu contraseña a continuación.";
+                } else {
+                    $mensaje = "Respuestas incorrectas. No puedes cambiar la contraseña.";
+                }
+            } else {
+                $mensaje = "Las preguntas o respuestas almacenadas son nulas.";
+            }
+        }
     } else {
-        $mensaje = "Respuestas incorrectas. No puedes cambiar la contraseña.";
+        $mensaje = "No se ha obtenido un nombre de usuario.";
     }
+} else {
+    $mensaje = "No hay registros en la tabla de usuarios temporales.";
 }
-
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -79,10 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <br>
         <!-- Agrega el botón de "Volver" -->
-        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/1_Login.php"><button type="button">Volver</button></a>
-
-    <?php 
-    } 
-    ?>
+        <a href="1_Login.php"><button type="button">Volver</button></a>
+    <?php } ?>
 </body>
 </html>

@@ -3,12 +3,7 @@ require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
 // Configurar la ubicación personalizada para los archivos de sesión
 session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
-
-// Verifica si ya hay una sesión activa
-if (isset($_SESSION['nombre_usuario'])) {
-    header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/0_Index_MenuPrincipal.html");
-    exit;
-}
+session_start();
 
 $conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
 
@@ -16,11 +11,29 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-// Obtener la dirección IP del usuario
-$ip_address = $_SERVER['REMOTE_ADDR'];
+// Verificar si hay una sesión activa
+if (isset($_SESSION['nombre_usuario'])) {
+    echo "<h2>Error: Sesión activa</h2>";
+    echo "<p>No puede iniciar sesión dos veces.</p>";
+    echo "<div id='countdown'></div>";
+    echo "<script>
+            var seconds = 10;
+            function updateCountdown() {
+                document.getElementById('countdown').innerHTML = 'Serás redirigido al login en ' + seconds + ' segundos.';
+                if (seconds == 0) {
+                    window.location.href = '/Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/1_Login.php';
+                } else {
+                    seconds--;
+                    setTimeout(updateCountdown, 1000);
+                }
+            }
+            updateCountdown();
+          </script>";
+    exit;
+}
 
-// Inicializar el contador de intentos fallidos por IP si no existe en el archivo
-$intentos_fallidos = isset($intentos_fallidos_por_ip[$ip_address]) ? $intentos_fallidos_por_ip[$ip_address] : 0;
+// Inicializar la variable de intentos fallidos
+$intentos_fallidos = isset($_SESSION['intentos_fallidos']) ? $_SESSION['intentos_fallidos'] : 0;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre_usuario = $_POST['nombre_usuario'];
@@ -52,7 +65,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $contrasena_bytes = $contrasena;
             $contrasena_proveida_hashed = hash_pbkdf2("sha256", $contrasena_bytes, $salt, $iteraciones, $longitud_hash);
 
+            // Verifica si la contraseña es correcta
             if ($contrasena_proveida_hashed == $contrasena_hashed) {
+                // Asigna el nombre de usuario a la sesión
+                $_SESSION['nombre_usuario'] = $nombre_usuario;
                 header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/1_Pagina_Menu_Principal/0_Index_MenuPrincipal.html");
                 exit;
             } else {
@@ -63,7 +79,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Verificar si el usuario está bloqueado después de tres intentos
                 if ($intentos_fallidos >= 3) {
-                    include '1.1_Bloquear_Usuario.php';
+                    echo "<h2>Error: Usuario bloqueado</h2>";
+                    echo "<p>Contacta con un Administrador o recupera la contraseña.</p>";
+                    echo "<div id='countdown'></div>";
+                    echo "<script>
+                            var seconds = 45;
+                            document.getElementById('nombre_usuario').disabled = true;
+                            document.getElementById('contrasena').disabled = true;
+                            document.querySelector('button').disabled = true;
+
+                            function updateCountdown() {
+                                document.getElementById('countdown').innerHTML = 'Serás redirigido al login en ' + seconds + ' segundos.';
+                                if (seconds == 0) {
+                                    window.location.href = '/Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/1_Login.php';
+                                } else {
+                                    seconds--;
+                                    setTimeout(updateCountdown, 1000);
+                                }
+                            }
+
+                            updateCountdown();
+                          </script>";
                     exit;
                 }
             }
@@ -71,9 +107,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errores['nombre_usuario'] = "Nombre de usuario no encontrado";
         }
     }
-    
+
     // Almacenar el contador actualizado en la variable de intentos fallidos por IP
-    $intentos_fallidos_por_ip[$ip_address] = $intentos_fallidos;
+    $_SESSION['intentos_fallidos'] = $intentos_fallidos;
 }
 ?>
 
