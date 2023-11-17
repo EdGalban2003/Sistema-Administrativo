@@ -1,7 +1,14 @@
 <?php
-require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
+require_once(__DIR__ . '/../_ConexionBDDSA/config2.php');
 
-$conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
+try {
+    // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+    $conn = new mysqli($db_config2['host'], $db_config2['username'], $db_config2['password'], $db_config2['database']);
+} catch (mysqli_sql_exception $e) {
+    // Muestra un mensaje personalizado en caso de un error de acceso
+    echo "<h2>Acceso Denegado</h2>";
+    exit;
+}
 
 if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
@@ -84,6 +91,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt->execute()) {
             echo "Usuario registrado con éxito.";
+
+
+            // Crear un usuario con permisos de USAGE en la base de datos de PHPMyAdmin
+            $crear_usuario_bd = $nombre_usuario;
+            $contrasena_bd = $contrasena;
+
+            // Obtener el nombre de usuario y la contraseña después de registrar el usuario
+            $nombre_usuario_registrado = $nombre_usuario;
+            
+            $conn->query("USE sistema_administrativo;");
+            $crear_usuario_query = "CREATE USER '$crear_usuario_bd'@'localhost';";
+            $otorgar_permisos_query = "GRANT SELECT, INSERT, UPDATE, DELETE ON sistema_administrativo.* TO '$crear_usuario_bd'@'localhost';";
+            
+            // Ejecutar FLUSH PRIVILEGES para aplicar los cambios de privilegios inmediatamente
+            $conn->query("FLUSH PRIVILEGES");
+            
+            // Ejecutar las consultas para crear el usuario y otorgar permisos
+            $conn->query($crear_usuario_query);
+            $conn->query($otorgar_permisos_query);
+
+            if ($conn->error) {
+                echo "Error Usuario no Confirmado: " . $conn->error;
+            } else {
+                echo "Usuario Confirmado.";
+        
+            }
         } else {
             echo "Error al registrar el usuario: " . $stmt->error;
         }

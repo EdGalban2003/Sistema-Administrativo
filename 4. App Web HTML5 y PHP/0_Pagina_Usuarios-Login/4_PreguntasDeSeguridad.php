@@ -11,8 +11,14 @@ if (!empty($_SESSION['nombre_usuario'])) {
     $nombre_usuario = $_SESSION['nombre_usuario'];
 } 
 
-// Conexión a la base de datos
-$conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
+try {
+    // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+    $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+} catch (mysqli_sql_exception $e) {
+    // Muestra un mensaje personalizado en caso de un error de acceso
+    echo "<h2>Acceso Denegado</h2>";
+    exit;
+}
 
 // Verificar la conexión
 if ($conn->connect_error) {
@@ -133,7 +139,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <br>
         <!-- Agrega el botón de "Volver" -->
         <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/0_Menu_Usuarios_Opciones.html"><button type="button">Volver</button></a>
-
     <script>
         enableAllOptions(); // Llamar a la función para cargar las opciones iniciales
     </script>

@@ -1,14 +1,25 @@
 <?php
 // Incluye el archivo de configuración
-require('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\config.php');
+require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
-// Conexión a la base de datos
-$conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
+// Iniciar sesión o reanudar la sesión existente
+session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
+session_start();
 
-// Verificar la conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+// Verificar si el usuario ya ha iniciado sesión
+if (!empty($_SESSION['nombre_usuario'])) {
+    $nombre_usuario = $_SESSION['nombre_usuario'];
+} 
+
+try {
+    // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+    $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+} catch (mysqli_sql_exception $e) {
+    // Muestra un mensaje personalizado en caso de un error de acceso
+    echo "<h2>Acceso Denegado</h2>";
+    exit;
 }
+
 
 // Función para verificar si un cliente existe por su cédula
 function cliente_existe_por_cedula($cedula, $conn) {
@@ -50,6 +61,9 @@ $conn->close();
         <input type="text" name="cedula" id="cedula" required>
         <button type="submit">Verificar</button>
     </form>
+
+    <!-- Botón "Volver" -->
+    <button onclick="window.history.back()">Volver</button>
 
     <?php
     if (isset($mensaje)) {

@@ -19,6 +19,13 @@ if (session_destroy()) {
     // Asegurarse de que la cookie de bloqueo también se elimine en el lado del cliente
     setcookie('usuario_bloqueado', '', time() - 3600, '/');
 
+    // Actualizar el archivo config.php con el 'username' vacío
+    $config_path = __DIR__ . '/../_ConexionBDDSA/config.php';
+    $config_content = file_get_contents($config_path);
+    $config_content = preg_replace("/'username' => \"[^\"]+\"/", "'username' => \"\"", $config_content);
+    file_put_contents($config_path, $config_content);
+
+
     // Redirigir a la página de inicio de sesión u otra página
     header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/1_Login.php");
     exit;

@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Cliente` (
   `Nombre_Cliente` VARCHAR(45) NOT NULL,
   `Apellido_Cliente` VARCHAR(45) NOT NULL,
   `Telefono_Cliente` VARCHAR(11) NOT NULL,
-  `Correo_Cliente` VARCHAR(45) NULL,
   `Direccion_Cliente` TEXT NULL,
   PRIMARY KEY (`ID_Cliente`),
   UNIQUE INDEX `Cedula_Cliente_UNIQUE` (`Cedula_Cliente` ASC) )
@@ -126,7 +125,6 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Proveedor` (
   `Tipo_Documento` VARCHAR(45) NOT NULL,
   `Numero_Documento` VARCHAR(45) NOT NULL,
   `Telefono_Proveedor` VARCHAR(11) NOT NULL,
-  `Correo_Proveedor` VARCHAR(45) NOT NULL,
   `Direccion_Proveedor` TEXT NOT NULL,
   PRIMARY KEY (`ID_Proveedor`),
   UNIQUE INDEX `Nombre_Comercial_Proveedor_UNIQUE` (`Nombre_Comercial_Proveedor` ASC) ,

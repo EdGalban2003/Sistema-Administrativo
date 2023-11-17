@@ -3,8 +3,7 @@
 
 $db_config = array(
     'host' => "localhost",
-    'username' => "UserGuest",
-    'password' => "U$3rG#3stP@ss",
+    'username' => "edgalban2",
     'database' => "sistema_administrativo"
 );
 ?>

@@ -6,15 +6,24 @@ require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
 session_start();
 
-// Conexión a la base de datos
-$conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
+// Verificar si el usuario ya ha iniciado sesión
+if (!empty($_SESSION['nombre_usuario'])) {
+    $nombre_usuario = $_SESSION['nombre_usuario'];
+} 
+
+try {
+    // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+    $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+} catch (mysqli_sql_exception $e) {
+    // Muestra un mensaje personalizado en caso de un error de acceso
+    echo "<h2>Acceso Denegado</h2>";
+    exit;
+}
 
 // Resto del código de verificación de respuestas
 $mensaje = "";
 $cambiar_contrasena = false; // Variable para habilitar el cambio de contraseña
 
-// Obtén el nombre de usuario desde la sesión
-$nombre_usuario = $_SESSION['nombre_usuario'];
 
 // Recupera las preguntas almacenadas en la base de datos
 $stmt = $conn->prepare("SELECT Pregunta1, Pregunta2, Pregunta3, Respuesta1, Salt2, Respuesta2, Salt3, Respuesta3, Salt4 FROM usuarios WHERE Nombre_Usuario = ?");
@@ -79,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <br>
         <!-- Agrega el botón de "Volver" -->
-        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/0_Menu_Usarios_Opciones.html"><button type="button">Volver</button></a>
+        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/0_Menu_Usuarios_Opciones.html"><button type="button">Volver</button></a>
 
     <?php 
     } 

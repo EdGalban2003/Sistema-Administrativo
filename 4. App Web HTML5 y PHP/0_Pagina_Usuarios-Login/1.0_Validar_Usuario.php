@@ -4,9 +4,15 @@ require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['nombre_usuario'])) {
     $nombre_usuario = $_POST['nombre_usuario'];
 
-    // Conecta a la base de datos
-    $conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
-
+    try {
+        // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+        $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+    } catch (mysqli_sql_exception $e) {
+        // Muestra un mensaje personalizado en caso de un error de acceso
+        echo "<h2>Acceso Denegado</h2>";
+        exit;
+    }
+    
     if ($conn->connect_error) {
         die("Conexión fallida: " . $conn->connect_error);
     }

@@ -5,10 +5,46 @@ require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
 session_start();
 
-$conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
+// Inicializar la variable de intentos fallidos
+$intentos_fallidos = isset($_SESSION['intentos_fallidos']) ? $_SESSION['intentos_fallidos'] : 0;
 
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nombre_usuario = $_POST['nombre_usuario'];
+    $contrasena = $_POST['contrasena'];
+
+    // Actualiza dinámicamente el archivo config.php con el nombre de usuario proporcionado
+    $config_path = __DIR__ . '/../_ConexionBDDSA/config.php';
+    $config_content = file_get_contents($config_path);
+
+    // Comprueba si el nombre de usuario está presente en el archivo config
+    if (preg_match("/'username' => \"[^\"]+\"/", $config_content)) {
+        // Reemplaza el nombre de usuario existente con el nuevo
+        $config_content = preg_replace("/'username' => \"[^\"]+\"/", "'username' => \"$nombre_usuario\"", $config_content);
+    } else {
+        // Agrega el nombre de usuario si no existe en el archivo config
+        $config_content = str_replace("'username' => \"\",", "'username' => \"$nombre_usuario\",", $config_content);
+    }
+
+    // Guarda los cambios en el archivo config.php
+    if (file_put_contents($config_path, $config_content) === false) {
+        die("Error al actualizar el archivo config.php");
+    }
+
+    try {
+        // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+        $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+    } catch (mysqli_sql_exception $e) {
+        // Muestra un mensaje personalizado en caso de un error de acceso
+        echo "<h2>Acceso Denegado</h2>";
+        echo "<p>Usuario no registrado.</p>";
+        echo "<p>Ocurrió un error al intentar acceder. Por favor, verifica tus credenciales.</p>";
+        echo "<a href='/Sistema-Administrativo/4. App Web HTML5 y PHP/0_Pagina_Usuarios-Login/1_Login.php'>Volver</a>";
+        exit;
+    }
+
+    if ($conn->connect_error) {
+        die("Conexión fallida: " . $conn->connect_error);
+    }
 }
 
 // Verificar si hay una sesión activa

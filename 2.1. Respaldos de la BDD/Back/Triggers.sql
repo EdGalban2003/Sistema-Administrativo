@@ -52,7 +52,7 @@ AFTER INSERT ON Cliente
 FOR EACH ROW
 BEGIN
   DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" un Clienter';
+  SET accion = 'Ha "Añadido" un Cliente';
 
   INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
   VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Cliente');
@@ -493,128 +493,10 @@ AFTER INSERT ON Detalle_Recibos
 FOR EACH ROW
 BEGIN
   DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" Informacio de Detalle de un Recibo';
+  SET accion = 'Ha "Añadido" Información de Detalle de un Recibo';
 
   INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
   VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos');
-END;
-$$
-
-DELIMITER ;
-
-
-
-
-
-########################
-Para Tabla Devoluciones:
-########################
-
-DELIMITER $$
-
-CREATE TRIGGER Trigger_Auditoria_Añadir_Devoluciones
-AFTER INSERT ON Devoluciones
-FOR EACH ROW
-BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" una Devolución';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Devoluciones');
-END;
-$$
-
-DELIMITER ;
-
-
-
-DELIMITER $$
-
-CREATE TRIGGER Trigger_Auditoria_Eliminar_Devoluciones
-AFTER DELETE ON Devoluciones
-FOR EACH ROW
-BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" una Devolución';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Devoluciones');
-END;
-$$
-
-DELIMITER ;
-
-
-DELIMITER $$
-
-CREATE TRIGGER Trigger_Auditoria_Modificar_Devoluciones
-AFTER UPDATE ON Devoluciones
-FOR EACH ROW
-BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" una Devolución';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Devoluciones');
-END;
-$$
-
-DELIMITER ;
-
-
-
-
-######################
-Para Tabla Reembolsos:
-######################
-
-DELIMITER $$
-
-CREATE TRIGGER Trigger_Auditoria_Añadir_Reembolsos
-AFTER INSERT ON Reembolsos
-FOR EACH ROW
-BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" un Reembolso';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Reembolsos');
-END;
-$$
-
-DELIMITER ;
-
-
-
-DELIMITER $$
-
-CREATE TRIGGER Trigger_Auditoria_Eliminar_Reembolsos
-AFTER DELETE ON Reembolsos
-FOR EACH ROW
-BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" un Reembolso';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Reembolsos');
-END;
-$$
-
-DELIMITER ;
-
-
-
-DELIMITER $$
-
-CREATE TRIGGER Trigger_Auditoria_Modificar_Reembolsos
-AFTER UPDATE ON Reembolsos
-FOR EACH ROW
-BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" un Reembolso';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Reembolsos');
 END;
 $$
 
@@ -713,7 +595,7 @@ AFTER DELETE ON CierreCaja
 FOR EACH ROW
 BEGIN
   DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" Información De Cierre de Caja';
+  SET accion = 'Ha "Eliminado" Información De Cierre de Caja';
 
   INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
   VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Cierre de Caja');
@@ -755,7 +637,7 @@ AFTER INSERT ON Usuarios
 FOR EACH ROW
 BEGIN
   DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" Un usuario';
+  SET accion = 'Ha "Añadido" un usuario';
 
   INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
   VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Usuarios');

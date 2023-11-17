@@ -1,9 +1,15 @@
 <?php
 // Incluye el archivo de configuración para la conexión a la base de datos
-require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
+require_once(__DIR__ . '/../_ConexionBDDSA/config2.php');
 
-// Conexión a la base de datos
-$conn = new mysqli($db_config['host'], $db_config['username'], $db_config['password'], $db_config['database']);
+try {
+    // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+    $conn = new mysqli($db_config2['host'], $db_config2['username'], $db_config2['password'], $db_config2['database']);
+} catch (mysqli_sql_exception $e) {
+    // Muestra un mensaje personalizado en caso de un error de acceso
+    echo "<h2>Acceso Denegado</h2>";
+    exit;
+}
 
 // Mensaje de error por defecto
 $error = '';
