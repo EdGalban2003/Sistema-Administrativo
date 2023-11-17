@@ -147,35 +147,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Sistema_Administrativo`.`Devoluciones`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Devoluciones` (
-  `ID_Devolucion` INT NOT NULL AUTO_INCREMENT,
-  `Fecha_Devolucion` DATE NOT NULL,
-  `Hora_Devolucion` TIME NOT NULL,
-  `Cantidad` INT(11) NOT NULL,
-  `Motivo_Devolucion` TEXT NOT NULL,
-  `Detalles_Adicionales` TEXT NULL,
-  `Cliente_ID_Cliente` INT NOT NULL,
-  `Recibos_ID_Recibo` INT NOT NULL,
-  `Recibos_Cliente_ID_Cliente` INT NOT NULL,
-  PRIMARY KEY (`ID_Devolucion`, `Cliente_ID_Cliente`, `Recibos_ID_Recibo`, `Recibos_Cliente_ID_Cliente`),
-  INDEX `fk_Devoluciones_Cliente1_idx` (`Cliente_ID_Cliente` ASC) ,
-  INDEX `fk_Devoluciones_Recibos1_idx` (`Recibos_ID_Recibo` ASC, `Recibos_Cliente_ID_Cliente` ASC) ,
-  CONSTRAINT `fk_Devoluciones_Cliente1`
-    FOREIGN KEY (`Cliente_ID_Cliente`)
-    REFERENCES `Sistema_Administrativo`.`Cliente` (`ID_Cliente`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Devoluciones_Recibos1`
-    FOREIGN KEY (`Recibos_ID_Recibo` , `Recibos_Cliente_ID_Cliente`)
-    REFERENCES `Sistema_Administrativo`.`Recibos` (`ID_Recibo` , `Cliente_ID_Cliente`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `Sistema_Administrativo`.`Usuarios`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Usuarios` (
@@ -230,35 +201,6 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Auditoria` (
   `Descripcion_Accion` TEXT NOT NULL,
   `Detalles_Adicionales` TEXT NOT NULL,
   PRIMARY KEY (`ID_Auditoria`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `Sistema_Administrativo`.`Reembolsos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Reembolsos` (
-  `ID_Reembolsos` INT NOT NULL AUTO_INCREMENT,
-  `Fecha_Reembolso` DATE NOT NULL,
-  `Hora_Reembolso` TIME NOT NULL,
-  `Monto_Reembolso` DECIMAL(10,2) NOT NULL,
-  `Motivo_Reembolso` TEXT NOT NULL,
-  `Detalles_Adicionales` TEXT NULL,
-  `Cliente_ID_Cliente` INT NOT NULL,
-  `Recibos_ID_Recibo` INT NOT NULL,
-  `Recibos_Cliente_ID_Cliente` INT NOT NULL,
-  PRIMARY KEY (`ID_Reembolsos`, `Cliente_ID_Cliente`, `Recibos_ID_Recibo`, `Recibos_Cliente_ID_Cliente`),
-  INDEX `fk_Reembolsos_Cliente1_idx` (`Cliente_ID_Cliente` ASC) ,
-  INDEX `fk_Reembolsos_Recibos1_idx` (`Recibos_ID_Recibo` ASC, `Recibos_Cliente_ID_Cliente` ASC) ,
-  CONSTRAINT `fk_Reembolsos_Cliente1`
-    FOREIGN KEY (`Cliente_ID_Cliente`)
-    REFERENCES `Sistema_Administrativo`.`Cliente` (`ID_Cliente`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Reembolsos_Recibos1`
-    FOREIGN KEY (`Recibos_ID_Recibo` , `Recibos_Cliente_ID_Cliente`)
-    REFERENCES `Sistema_Administrativo`.`Recibos` (`ID_Recibo` , `Cliente_ID_Cliente`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
@@ -430,28 +372,6 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Recibos_has_Forma_de_Pago` 
   CONSTRAINT `fk_Recibos_has_Forma_de_Pago_Forma_de_Pago1`
     FOREIGN KEY (`Forma_de_Pago_ID_FormaPago`)
     REFERENCES `Sistema_Administrativo`.`Forma_de_Pago` (`ID_FormaPago`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `Sistema_Administrativo`.`Usuarios_has_CierreCaja`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Usuarios_has_CierreCaja` (
-  `Usuarios_ID_Usuario` INT NOT NULL,
-  `CierreCaja_ID_CierreCaja` INT NOT NULL,
-  PRIMARY KEY (`Usuarios_ID_Usuario`, `CierreCaja_ID_CierreCaja`),
-  INDEX `fk_Usuarios_has_CierreCaja_CierreCaja1_idx` (`CierreCaja_ID_CierreCaja` ASC) ,
-  INDEX `fk_Usuarios_has_CierreCaja_Usuarios1_idx` (`Usuarios_ID_Usuario` ASC) ,
-  CONSTRAINT `fk_Usuarios_has_CierreCaja_Usuarios1`
-    FOREIGN KEY (`Usuarios_ID_Usuario`)
-    REFERENCES `Sistema_Administrativo`.`Usuarios` (`ID_Usuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Usuarios_has_CierreCaja_CierreCaja1`
-    FOREIGN KEY (`CierreCaja_ID_CierreCaja`)
-    REFERENCES `Sistema_Administrativo`.`CierreCaja` (`ID_CierreCaja`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
