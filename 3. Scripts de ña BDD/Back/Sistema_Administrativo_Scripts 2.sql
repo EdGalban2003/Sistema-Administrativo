@@ -399,6 +399,17 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Sesiones` (
 ENGINE = InnoDB;
 
 
+-- -----------------------------------------------------
+-- Table `Sistema_Administrativo`.`Usuarios_Temporales`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Usuarios_Temporales` (
+  `ID_UsuariosTemporales` INT NOT NULL AUTO_INCREMENT,
+  `Nombre_Usuario` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`ID_UsuariosTemporales`),
+  UNIQUE INDEX `Nombre_Usuario_UNIQUE` (`Nombre_Usuario` ASC) )
+ENGINE = InnoDB;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

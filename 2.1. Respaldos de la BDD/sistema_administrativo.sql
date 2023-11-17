@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-11-2023 a las 03:38:16
+-- Tiempo de generación: 17-11-2023 a las 06:27:28
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -36,30 +36,6 @@ CREATE TABLE `auditoria` (
   `Detalles_Adicionales` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Disparadores `auditoria`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_Auditoria` AFTER DELETE ON `auditoria` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" Información de Seguimiento';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Auditoria');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_Auditoria` AFTER UPDATE ON `auditoria` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" Información de Seguimiento';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Auditoria');
-END
-$$
-DELIMITER ;
-
 -- --------------------------------------------------------
 
 --
@@ -72,40 +48,6 @@ CREATE TABLE `categorias` (
   `Detalle_Categoria` varchar(45) NOT NULL,
   `Productos_ID_Producto` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Disparadores `categorias`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_Categorias` AFTER INSERT ON `categorias` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" una Categoria';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Categorias');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_Categorias` AFTER DELETE ON `categorias` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" una Categoria';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Categorias');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_Categorias` AFTER UPDATE ON `categorias` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" una Categoria';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Categorias');
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -125,40 +67,6 @@ CREATE TABLE `cierrecaja` (
   `Detalles` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Disparadores `cierrecaja`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_CierreCaja` AFTER INSERT ON `cierrecaja` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" Información De Cierre de Caja';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Cierre de Caja');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_CierreCaja` AFTER DELETE ON `cierrecaja` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" Información De Cierre de Caja';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Cierre de Caja');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_CierreCaja` AFTER UPDATE ON `cierrecaja` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" Información De Cierre de Caja';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Cierre de Caja');
-END
-$$
-DELIMITER ;
-
 -- --------------------------------------------------------
 
 --
@@ -175,92 +83,6 @@ CREATE TABLE `cliente` (
   `Direccion_Cliente` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Disparadores `cliente`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Agregar_Cliente` AFTER INSERT ON `cliente` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" un Clienter';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Cliente');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_Cliente` AFTER DELETE ON `cliente` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" un Cliente';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Cliente');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_Cliente` AFTER UPDATE ON `cliente` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" un Cliente';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Cliente');
-END
-$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `devoluciones`
---
-
-CREATE TABLE `devoluciones` (
-  `ID_Devolucion` int(11) NOT NULL,
-  `Fecha_Devolucion` date NOT NULL,
-  `Hora_Devolucion` time NOT NULL,
-  `Cantidad` int(11) NOT NULL,
-  `Motivo_Devolucion` text NOT NULL,
-  `Detalles_Adicionales` text DEFAULT NULL,
-  `Cliente_ID_Cliente` int(11) NOT NULL,
-  `Recibos_ID_Recibo` int(11) NOT NULL,
-  `Recibos_Cliente_ID_Cliente` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Disparadores `devoluciones`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_Devoluciones` AFTER INSERT ON `devoluciones` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" una Devolución';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Devoluciones');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_Devoluciones` AFTER DELETE ON `devoluciones` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" una Devolución';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Devoluciones');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_Devoluciones` AFTER UPDATE ON `devoluciones` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" una Devolución';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Devoluciones');
-END
-$$
-DELIMITER ;
-
 -- --------------------------------------------------------
 
 --
@@ -272,40 +94,6 @@ CREATE TABLE `forma_de_pago` (
   `Nombre_FormaPago` varchar(45) NOT NULL,
   `Descripcion` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Disparadores `forma_de_pago`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_ForPag` AFTER INSERT ON `forma_de_pago` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" Información de Forma de Pago';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Forma de Pago');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_ForPag` AFTER DELETE ON `forma_de_pago` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" Información de Forma de Pago';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Forma de Pago');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_ForPag` AFTER UPDATE ON `forma_de_pago` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" Información de Forma de Pago';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Forma de Pago');
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -319,40 +107,6 @@ CREATE TABLE `impuestos` (
   `Tasa_Impuesto` decimal(10,2) NOT NULL,
   `Descripcion_Impuesto` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Disparadores `impuestos`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_Impuestos` AFTER INSERT ON `impuestos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" un Impuesto';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Impuestos');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_Impuestos` AFTER DELETE ON `impuestos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" un Impuesto';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Impuestos');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_Impuestos` AFTER UPDATE ON `impuestos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" un Impuesto';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Impuestos');
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -372,40 +126,6 @@ CREATE TABLE `informacion_negocio` (
   `Hora_Registro` time NOT NULL,
   `Actividad_Comercial` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Disparadores `informacion_negocio`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_InfoNeg` AFTER INSERT ON `informacion_negocio` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" información del Negocio';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Información de Negocio');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_InfoNeg` AFTER DELETE ON `informacion_negocio` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" información del Negocio';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Información de Negocio');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_InfoNeg` AFTER UPDATE ON `informacion_negocio` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" información del Negocio';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Información de Negocio');
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -439,40 +159,6 @@ CREATE TABLE `productos` (
   `Promocion` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Disparadores `productos`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_Producto` AFTER INSERT ON `productos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" un Producto';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Productos');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_Producto` AFTER DELETE ON `productos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" un Producto';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Productos');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_Producto` AFTER UPDATE ON `productos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" un Producto';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Productos');
-END
-$$
-DELIMITER ;
-
 -- --------------------------------------------------------
 
 --
@@ -491,40 +177,6 @@ CREATE TABLE `proveedor` (
   `Direccion_Proveedor` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Disparadores `proveedor`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Agregar_Proveedor` AFTER INSERT ON `proveedor` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" un Proveedor';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Proveedores');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_Proveedor` AFTER DELETE ON `proveedor` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" un Proveedor';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Proveedores');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_Proveedor` AFTER UPDATE ON `proveedor` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" un Proveedor';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Proveedores');
-END
-$$
-DELIMITER ;
-
 -- --------------------------------------------------------
 
 --
@@ -537,72 +189,6 @@ CREATE TABLE `recibos` (
   `Hora_Recibo` time NOT NULL,
   `Cliente_ID_Cliente` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Disparadores `recibos`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_Recibos` AFTER INSERT ON `recibos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" un Recibo';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Recibos');
-END
-$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `reembolsos`
---
-
-CREATE TABLE `reembolsos` (
-  `ID_Reembolsos` int(11) NOT NULL,
-  `Fecha_Reembolso` date NOT NULL,
-  `Hora_Reembolso` time NOT NULL,
-  `Monto_Reembolso` decimal(10,2) NOT NULL,
-  `Motivo_Reembolso` text NOT NULL,
-  `Detalles_Adicionales` text DEFAULT NULL,
-  `Cliente_ID_Cliente` int(11) NOT NULL,
-  `Recibos_ID_Recibo` int(11) NOT NULL,
-  `Recibos_Cliente_ID_Cliente` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Disparadores `reembolsos`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_Reembolsos` AFTER INSERT ON `reembolsos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" un Reembolso';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Reembolsos');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_Reembolsos` AFTER DELETE ON `reembolsos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" un Reembolso';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Reembolsos');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_Reembolsos` AFTER UPDATE ON `reembolsos` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" un Reembolso';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Reembolsos');
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -630,40 +216,6 @@ CREATE TABLE `usuarios` (
   `Salt4` varbinary(32) DEFAULT NULL,
   `Respuesta3` varbinary(32) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Disparadores `usuarios`
---
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Añadir_Usuario` AFTER INSERT ON `usuarios` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Añadido" Un usuario';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Usuarios');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Eliminar_Usuario` AFTER DELETE ON `usuarios` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Eliminado" un Usuario';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Usuarios');
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `Trigger_Auditoria_Modificar_Usuario` AFTER UPDATE ON `usuarios` FOR EACH ROW BEGIN
-  DECLARE accion VARCHAR(45);
-  SET accion = 'Ha "Modificado" un Usuario';
-
-  INSERT INTO Auditoria (Fecha_Accion, Hora_Accion, Usuario, Descripcion_Accion, Detalles_Adicionales)
-  VALUES (CURDATE(), CURTIME(), USER(), accion, 'Operación en Usuarios');
-END
-$$
-DELIMITER ;
 
 --
 -- Índices para tablas volcadas
@@ -695,14 +247,6 @@ ALTER TABLE `cierrecaja`
 ALTER TABLE `cliente`
   ADD PRIMARY KEY (`ID_Cliente`),
   ADD UNIQUE KEY `Cedula_Cliente_UNIQUE` (`Cedula_Cliente`);
-
---
--- Indices de la tabla `devoluciones`
---
-ALTER TABLE `devoluciones`
-  ADD PRIMARY KEY (`ID_Devolucion`,`Cliente_ID_Cliente`,`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`),
-  ADD KEY `fk_Devoluciones_Cliente1_idx` (`Cliente_ID_Cliente`),
-  ADD KEY `fk_Devoluciones_Recibos1_idx` (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`);
 
 --
 -- Indices de la tabla `forma_de_pago`
@@ -756,14 +300,6 @@ ALTER TABLE `recibos`
   ADD KEY `fk_Factura_Cliente1_idx` (`Cliente_ID_Cliente`);
 
 --
--- Indices de la tabla `reembolsos`
---
-ALTER TABLE `reembolsos`
-  ADD PRIMARY KEY (`ID_Reembolsos`,`Cliente_ID_Cliente`,`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`),
-  ADD KEY `fk_Reembolsos_Cliente1_idx` (`Cliente_ID_Cliente`),
-  ADD KEY `fk_Reembolsos_Recibos1_idx` (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`);
-
---
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -797,12 +333,6 @@ ALTER TABLE `cierrecaja`
 --
 ALTER TABLE `cliente`
   MODIFY `ID_Cliente` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `devoluciones`
---
-ALTER TABLE `devoluciones`
-  MODIFY `ID_Devolucion` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `forma_de_pago`
@@ -847,12 +377,6 @@ ALTER TABLE `recibos`
   MODIFY `ID_Recibo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `reembolsos`
---
-ALTER TABLE `reembolsos`
-  MODIFY `ID_Reembolsos` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -869,24 +393,10 @@ ALTER TABLE `categorias`
   ADD CONSTRAINT `fk_Categorias_Productos1` FOREIGN KEY (`Productos_ID_Producto`) REFERENCES `productos` (`ID_Producto`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Filtros para la tabla `devoluciones`
---
-ALTER TABLE `devoluciones`
-  ADD CONSTRAINT `fk_Devoluciones_Cliente1` FOREIGN KEY (`Cliente_ID_Cliente`) REFERENCES `cliente` (`ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Devoluciones_Recibos1` FOREIGN KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`) REFERENCES `recibos` (`ID_Recibo`, `Cliente_ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
 -- Filtros para la tabla `recibos`
 --
 ALTER TABLE `recibos`
   ADD CONSTRAINT `fk_Factura_Cliente1` FOREIGN KEY (`Cliente_ID_Cliente`) REFERENCES `cliente` (`ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Filtros para la tabla `reembolsos`
---
-ALTER TABLE `reembolsos`
-  ADD CONSTRAINT `fk_Reembolsos_Cliente1` FOREIGN KEY (`Cliente_ID_Cliente`) REFERENCES `cliente` (`ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Reembolsos_Recibos1` FOREIGN KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`) REFERENCES `recibos` (`ID_Recibo`, `Cliente_ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
