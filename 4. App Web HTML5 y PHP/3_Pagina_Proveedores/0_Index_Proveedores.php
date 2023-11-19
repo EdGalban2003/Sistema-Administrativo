@@ -21,6 +21,7 @@
             <li class="link"><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/3_Pagina_Proveedores/0_Index_Proveedores.php">Proveedores</a></li>
             <li class="link"><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/4_Pagina_Productos/0_Index_Productos.php">Productos</a></li>
             <li class="link"><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/5_Pagina_Categorias/0_Index_Categorias.php">Categorias</a></li>
+
           </ul>
         </li>    
         <li class="submenu">
@@ -84,90 +85,92 @@
     </form>
     
 
-      <?php
-      // Incluye el archivo de configuración
-      require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
+    <?php
+// Incluye el archivo de configuración
+require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
-      // Iniciar sesión o reanudar la sesión existente
-      session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
-      session_start();
+// Iniciar sesión o reanudar la sesión existente
+session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
+session_start();
 
-      // Verificar si el usuario ya ha iniciado sesión
-      if (!empty($_SESSION['nombre_usuario'])) {
-          $nombre_usuario = $_SESSION['nombre_usuario'];
+// Verificar si el usuario ya ha iniciado sesión
+if (!empty($_SESSION['nombre_usuario'])) {
+    $nombre_usuario = $_SESSION['nombre_usuario'];
+} else {
+    // Si no hay un usuario en la sesión, redirige o realiza alguna acción adecuada
+    echo "<h2>Acceso Denegado</h2>";
+    exit;
+}
+
+try {
+    // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+    $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+} catch (mysqli_sql_exception $e) {
+    // Muestra un mensaje personalizado en caso de un error de acceso
+    echo "<h2>Acceso Denegado</h2>";
+    exit;
+}
+
+ // Función para eliminar proveedor
+ if (isset($_POST['eliminar_proveedor'])) {
+  $id_proveedor = $_POST['id_proveedor'];
+
+  // Preparar la consulta de eliminación
+  $query_eliminar = "DELETE FROM Proveedor WHERE ID_Proveedor = ?";
+  $stmt_eliminar = $conn->prepare($query_eliminar);
+
+  if ($stmt_eliminar) {
+      $stmt_eliminar->bind_param("s", $id_proveedor);
+
+      // Ejecutar la eliminación
+      if ($stmt_eliminar->execute()) {
+          // Redirigir a otra página después de la eliminación
+          header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/3_Pagina_Proveedores/0_Index_Proveedores.php");
+          exit(); 
       } else {
-          // Si no hay un usuario en la sesión, redirige o realiza alguna acción adecuada
-          echo "<h2>Acceso Denegado</h2>";
-          exit;
+          echo "Error al eliminar el proveedor: " . $stmt_eliminar->error;
       }
 
-      // Inicializar la variable de conexión fuera del bloque try-catch
-      $conn = null;
+      // Cerrar la declaración preparada
+      $stmt_eliminar->close();
+  } else {
+      echo "Error al preparar la consulta: " . $conn->error;
+  }
+}
 
-      try {
-          // Intenta la conexión con la base de datos después de actualizar el archivo config.php
-          $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
-      } catch (mysqli_sql_exception $e) {
-          // Muestra un mensaje personalizado en caso de un error de acceso
-          echo "<h2>Acceso Denegado</h2>";
-          exit;
-      }
 
-      // Realizar la eliminación directamente en la misma página si se ha enviado el formulario
-      if (isset($_POST['eliminar_cliente'])) {
-          $cedula_cliente = $_POST['cedula_cliente'];
+// Realizar la consulta a la base de datos con la opción de búsqueda
+$search_query = isset($_GET['q']) ? $_GET['q'] : '';
+$query = "SELECT * FROM Proveedor WHERE 
+          ID_Proveedor LIKE '%$search_query%' OR 
+          Nombre_Comercial_Proveedor LIKE '%$search_query%' OR 
+          Nombre_Proveedor LIKE '%$search_query%' OR 
+          Apellido_Proveedor LIKE '%$search_query%' OR 
+          Tipo_Documento LIKE '%$search_query%' OR 
+          Numero_Documento LIKE '%$search_query%' OR 
+          Telefono_Proveedor LIKE '%$search_query%' OR 
+          Direccion_Proveedor LIKE '%$search_query%'";
 
-          // Preparar la consulta de eliminación
-          $query = "DELETE FROM Cliente WHERE Cedula_Cliente = ?";
-          $stmt = $conn->prepare($query);
+$result = $conn->query($query);
+?>
 
-          if (!$stmt) {
-              // Manejar el error de preparación
-              echo "Error al preparar la consulta: " . $conn->error;
-          } else {
-              $stmt->bind_param("s", $cedula_cliente);
-
-              // Ejecutar la eliminación
-              if ($stmt->execute()) {
-                  // Redirigir a otra página después de la eliminación
-                  header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/0_Index_Cliente.php");
-                  exit(); 
-              } else {
-                  echo "Error al eliminar el cliente: " . $stmt->error;
-              }
-
-              // Cerrar la declaración preparada
-              $stmt->close();
-          }
-      }
-
-      // Realizar la consulta a la base de datos con la opción de búsqueda
-      $search_query = isset($_GET['q']) ? $_GET['q'] : '';
-      $query = "SELECT * FROM Cliente WHERE 
-                Cedula_Cliente LIKE '%$search_query%' OR 
-                Nombre_Cliente LIKE '%$search_query%' OR 
-                Apellido_Cliente LIKE '%$search_query%' OR 
-                Telefono_Cliente LIKE '%$search_query%' OR 
-                Direccion_Cliente LIKE '%$search_query%'";
-
-      $result = $conn->query($query);
-      ?>
-
-    <div class="funciones">
-        <button type="submit"><img src="assets/img/Añadir 2.gif" alt=""></button>
-        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/1_Añadir_Cliente.php">Añadir Cliente</a>
-        <button type="submit"><img src="assets/img/Añadir.gif" alt=""></button>
-    </div>
+<div class="funciones">
+    <button type="submit"><img src="assets/img/Añadir 2.gif" alt=""></button>
+    <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/3_Pagina_Proveedores/1_Añadir_Proveedores.php">Añadir Proveedor</a>
+    <button type="submit"><img src="assets/img/Añadir.gif" alt=""></button>
+</div>
 </div>
 
 <div class="container">
     <table>
         <thead>
             <tr>
-                <th>ID Cliente</th>
-                <th>Cédula</th>
+                <th>ID Proveedor</th>
+                <th>Nombre Comercial</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
+                <th>Tipo Documento</th>
+                <th>Número Documento</th>
                 <th>Teléfono</th>
                 <th>Dirección</th>
                 <th>Modificar/Eliminar</th>
@@ -178,33 +181,34 @@
             // Mostrar datos en la tabla
             while ($row = $result->fetch_assoc()) {
                 echo "<tr>";
-                echo "<td>" . $row['ID_Cliente'] . "</td>";
-                echo "<td>" . $row['Cedula_Cliente'] . "</td>";
-                echo "<td>" . $row['Nombre_Cliente'] . "</td>";
-                echo "<td>" . $row['Apellido_Cliente'] . "</td>";
-                echo "<td>" . $row['Telefono_Cliente'] . "</td>";
-                echo "<td>" . $row['Direccion_Cliente'] . "</td>";
+                echo "<td>" . $row['ID_Proveedor'] . "</td>";
+                echo "<td>" . $row['Nombre_Comercial_Proveedor'] . "</td>";
+                echo "<td>" . $row['Nombre_Proveedor'] . "</td>";
+                echo "<td>" . $row['Apellido_Proveedor'] . "</td>";
+                echo "<td>" . $row['Tipo_Documento'] . "</td>";
+                echo "<td>" . $row['Numero_Documento'] . "</td>";
+                echo "<td>" . $row['Telefono_Proveedor'] . "</td>";
+                echo "<td>" . $row['Direccion_Proveedor'] . "</td>";
                 echo "<td>";
 
-                // Botón Modificar Cliente (Ayuda.gif)
-                echo "<a href='/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/2_Modificar_Cliente.php?cedula=" . $row['Cedula_Cliente'] . "'>";
+                // Botón Modificar Proveedor (Ayuda.gif)
+                echo "<a href='/Sistema-Administrativo/4. App Web HTML5 y PHP/3_Pagina_Proveedores/2_Modificar_Proveedores.php?id_proveedor=" . $row['ID_Proveedor'] . "'>";
                 echo "<button><img src='assets/img/Editar.gif' alt=''></button>";
                 echo "</a>";
 
-                // Botón Eliminar Cliente (Eliminar.gif)
+                // Botón Eliminar Proveedor (Eliminar.gif)
                 echo "<form method='post'>";
-                echo "<input type='hidden' name='cedula_cliente' value='" . $row['Cedula_Cliente'] . "'>";
-                echo "<button type='submit' name='eliminar_cliente'><img src='assets/img/Eliminar.gif' alt=''></button>";
+                echo "<input type='hidden' name='id_proveedor' value='" . $row['ID_Proveedor'] . "'>";
+                echo "<button type='submit' name='eliminar_proveedor'><img src='assets/img/Eliminar.gif' alt=''></button>";
                 echo "</form>";
-
 
                 echo "</td>";
                 echo "</tr>";
             }
+
             ?>
-        </tbody>
-    </table>
-</div>
-  
+        
+    </tbody>
+   </table>
+  </div>
 </body>
-</html>

@@ -17,10 +17,9 @@
         <li class="submenu">
           <a href="#">Catálogos</a>
           <ul class="hijos">
-          <li class="link"><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/0_Index_Cliente.php">Clientes</a></li>
-            <li class="link"><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/3_Pagina_Proveedores/0_Index_Proveedores.php">Proveedores</a></li>
-            <li class="link"><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/4_Pagina_Productos/0_Index_Productos.php">Productos</a></li>
-            <li class="link"><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/5_Pagina_Categorias/0_Index_Categorias.php">Categorias</a></li>
+          <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/0_Index_Cliente.php">Clientes</a></li>
+            <li><a href="">Proveedores</a></li>
+            <li><a href="">Productos</a></li>
           </ul>
         </li>    
         <li class="submenu">
@@ -84,74 +83,39 @@
     </form>
     
 
-      <?php
-      // Incluye el archivo de configuración
-      require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
+    <?php
+    // Incluye el archivo de configuración
+    require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
-      // Iniciar sesión o reanudar la sesión existente
-      session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
-      session_start();
+    // Iniciar sesión o reanudar la sesión existente
+    session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
+    session_start();
 
-      // Verificar si el usuario ya ha iniciado sesión
-      if (!empty($_SESSION['nombre_usuario'])) {
-          $nombre_usuario = $_SESSION['nombre_usuario'];
-      } else {
-          // Si no hay un usuario en la sesión, redirige o realiza alguna acción adecuada
-          echo "<h2>Acceso Denegado</h2>";
-          exit;
-      }
+    // Verificar si el usuario ya ha iniciado sesión
+    if (!empty($_SESSION['nombre_usuario'])) {
+        $nombre_usuario = $_SESSION['nombre_usuario'];
+    } 
 
-      // Inicializar la variable de conexión fuera del bloque try-catch
-      $conn = null;
+    try {
+        // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+        $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+    } catch (mysqli_sql_exception $e) {
+        // Muestra un mensaje personalizado en caso de un error de acceso
+        echo "<h2>Acceso Denegado</h2>";
+        exit;
+    }
 
-      try {
-          // Intenta la conexión con la base de datos después de actualizar el archivo config.php
-          $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
-      } catch (mysqli_sql_exception $e) {
-          // Muestra un mensaje personalizado en caso de un error de acceso
-          echo "<h2>Acceso Denegado</h2>";
-          exit;
-      }
+    // Realizar la consulta a la base de datos con la opción de búsqueda
+    $search_query = isset($_GET['q']) ? $_GET['q'] : '';
+    $query = "SELECT * FROM Cliente WHERE 
+              Cedula_Cliente LIKE '%$search_query%' OR 
+              Nombre_Cliente LIKE '%$search_query%' OR 
+              Apellido_Cliente LIKE '%$search_query%' OR 
+              Telefono_Cliente LIKE '%$search_query%' OR 
+              Direccion_Cliente LIKE '%$search_query%'";
 
-      // Realizar la eliminación directamente en la misma página si se ha enviado el formulario
-      if (isset($_POST['eliminar_cliente'])) {
-          $cedula_cliente = $_POST['cedula_cliente'];
-
-          // Preparar la consulta de eliminación
-          $query = "DELETE FROM Cliente WHERE Cedula_Cliente = ?";
-          $stmt = $conn->prepare($query);
-
-          if (!$stmt) {
-              // Manejar el error de preparación
-              echo "Error al preparar la consulta: " . $conn->error;
-          } else {
-              $stmt->bind_param("s", $cedula_cliente);
-
-              // Ejecutar la eliminación
-              if ($stmt->execute()) {
-                  // Redirigir a otra página después de la eliminación
-                  header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/0_Index_Cliente.php");
-                  exit(); 
-              } else {
-                  echo "Error al eliminar el cliente: " . $stmt->error;
-              }
-
-              // Cerrar la declaración preparada
-              $stmt->close();
-          }
-      }
-
-      // Realizar la consulta a la base de datos con la opción de búsqueda
-      $search_query = isset($_GET['q']) ? $_GET['q'] : '';
-      $query = "SELECT * FROM Cliente WHERE 
-                Cedula_Cliente LIKE '%$search_query%' OR 
-                Nombre_Cliente LIKE '%$search_query%' OR 
-                Apellido_Cliente LIKE '%$search_query%' OR 
-                Telefono_Cliente LIKE '%$search_query%' OR 
-                Direccion_Cliente LIKE '%$search_query%'";
-
-      $result = $conn->query($query);
-      ?>
+    $result = $conn->query($query);
+    ?>
 
     <div class="funciones">
         <button type="submit"><img src="assets/img/Añadir 2.gif" alt=""></button>
@@ -196,7 +160,6 @@
                 echo "<input type='hidden' name='cedula_cliente' value='" . $row['Cedula_Cliente'] . "'>";
                 echo "<button type='submit' name='eliminar_cliente'><img src='assets/img/Eliminar.gif' alt=''></button>";
                 echo "</form>";
-
 
                 echo "</td>";
                 echo "</tr>";

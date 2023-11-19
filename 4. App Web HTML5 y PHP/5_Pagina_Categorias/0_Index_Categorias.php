@@ -83,93 +83,74 @@
         <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
     </form>
     
+    <?php
+// Incluye el archivo de configuración
+require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
-      <?php
-      // Incluye el archivo de configuración
-      require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
+// Iniciar sesión o reanudar la sesión existente
+session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
+session_start();
 
-      // Iniciar sesión o reanudar la sesión existente
-      session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
-      session_start();
+// Verificar si el usuario ya ha iniciado sesión
+if (!empty($_SESSION['nombre_usuario'])) {
+    $nombre_usuario = $_SESSION['nombre_usuario'];
+} 
 
-      // Verificar si el usuario ya ha iniciado sesión
-      if (!empty($_SESSION['nombre_usuario'])) {
-          $nombre_usuario = $_SESSION['nombre_usuario'];
-      } else {
-          // Si no hay un usuario en la sesión, redirige o realiza alguna acción adecuada
-          echo "<h2>Acceso Denegado</h2>";
-          exit;
-      }
+try {
+    // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+    $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+} catch (mysqli_sql_exception $e) {
+    // Muestra un mensaje personalizado en caso de un error de acceso
+    echo "<h2>Acceso Denegado</h2>";
+    exit;
+}
 
-      // Inicializar la variable de conexión fuera del bloque try-catch
-      $conn = null;
+// Realizar la eliminación directamente en la misma página
+if (isset($_POST['eliminar_categoria'])) {
+    // Obtener el ID de la categoría a eliminar desde el formulario
+    $id_categoria = $_POST['id_categoria'];
 
-      try {
-          // Intenta la conexión con la base de datos después de actualizar el archivo config.php
-          $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
-      } catch (mysqli_sql_exception $e) {
-          // Muestra un mensaje personalizado en caso de un error de acceso
-          echo "<h2>Acceso Denegado</h2>";
-          exit;
-      }
+    // Preparar la consulta de eliminación
+    $query = "DELETE FROM Categorias WHERE ID_Categoria = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $id_categoria);
 
-      // Realizar la eliminación directamente en la misma página si se ha enviado el formulario
-      if (isset($_POST['eliminar_cliente'])) {
-          $cedula_cliente = $_POST['cedula_cliente'];
+    // Ejecutar la eliminación
+    if ($stmt->execute()) {
+        // Redirigir a otra página después de la eliminación
+        header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/5_Pagina_Categorias/0_Index_Categorias.php");
+        exit(); // Asegurarse de que el script se detenga después de la redirección
+    } else {
+        echo "Error al eliminar la categoría: " . $stmt->error;
+    }
 
-          // Preparar la consulta de eliminación
-          $query = "DELETE FROM Cliente WHERE Cedula_Cliente = ?";
-          $stmt = $conn->prepare($query);
+    // Cerrar la declaración preparada
+    $stmt->close();
+}
 
-          if (!$stmt) {
-              // Manejar el error de preparación
-              echo "Error al preparar la consulta: " . $conn->error;
-          } else {
-              $stmt->bind_param("s", $cedula_cliente);
+// Realizar la consulta a la base de datos con la opción de búsqueda para categorías
+$search_query = isset($_GET['q']) ? $_GET['q'] : '';
+$query = "SELECT * FROM Categorias WHERE 
+          Nombre_Categoria LIKE '%$search_query%' OR 
+          Detalle_Categoria LIKE '%$search_query%'";
 
-              // Ejecutar la eliminación
-              if ($stmt->execute()) {
-                  // Redirigir a otra página después de la eliminación
-                  header("Location: /Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/0_Index_Cliente.php");
-                  exit(); 
-              } else {
-                  echo "Error al eliminar el cliente: " . $stmt->error;
-              }
+$result = $conn->query($query);
+?>
 
-              // Cerrar la declaración preparada
-              $stmt->close();
-          }
-      }
-
-      // Realizar la consulta a la base de datos con la opción de búsqueda
-      $search_query = isset($_GET['q']) ? $_GET['q'] : '';
-      $query = "SELECT * FROM Cliente WHERE 
-                Cedula_Cliente LIKE '%$search_query%' OR 
-                Nombre_Cliente LIKE '%$search_query%' OR 
-                Apellido_Cliente LIKE '%$search_query%' OR 
-                Telefono_Cliente LIKE '%$search_query%' OR 
-                Direccion_Cliente LIKE '%$search_query%'";
-
-      $result = $conn->query($query);
-      ?>
-
-    <div class="funciones">
-        <button type="submit"><img src="assets/img/Añadir 2.gif" alt=""></button>
-        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/1_Añadir_Cliente.php">Añadir Cliente</a>
-        <button type="submit"><img src="assets/img/Añadir.gif" alt=""></button>
-    </div>
+<div class="funciones">
+    <button type="submit"><img src="assets/img/Añadir 2.gif" alt=""></button>
+    <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/5_Pagina_Categorias/1_Añadir_Categorias.php">Añadir Categoría</a>
+    <button type="submit"><img src="assets/img/Añadir.gif" alt=""></button>
+</div>
 </div>
 
 <div class="container">
     <table>
         <thead>
             <tr>
-                <th>ID Cliente</th>
-                <th>Cédula</th>
+                <th>ID Categoría</th>
                 <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
+                <th>Detalle</th>
                 <th>Modificar/Eliminar</th>
             </tr>
         </thead>
@@ -178,25 +159,21 @@
             // Mostrar datos en la tabla
             while ($row = $result->fetch_assoc()) {
                 echo "<tr>";
-                echo "<td>" . $row['ID_Cliente'] . "</td>";
-                echo "<td>" . $row['Cedula_Cliente'] . "</td>";
-                echo "<td>" . $row['Nombre_Cliente'] . "</td>";
-                echo "<td>" . $row['Apellido_Cliente'] . "</td>";
-                echo "<td>" . $row['Telefono_Cliente'] . "</td>";
-                echo "<td>" . $row['Direccion_Cliente'] . "</td>";
+                echo "<td>" . $row['ID_Categoria'] . "</td>";
+                echo "<td>" . $row['Nombre_Categoria'] . "</td>";
+                echo "<td>" . $row['Detalle_Categoria'] . "</td>";
                 echo "<td>";
 
-                // Botón Modificar Cliente (Ayuda.gif)
-                echo "<a href='/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/2_Modificar_Cliente.php?cedula=" . $row['Cedula_Cliente'] . "'>";
+                // Botón Modificar Categoría (Ayuda.gif)
+                echo "<a href='/Sistema-Administrativo/4. App Web HTML5 y PHP/5_Pagina_Categorias/2_Modificar_Categorias.php?id_categoria=" . $row['ID_Categoria'] . "'>";
                 echo "<button><img src='assets/img/Editar.gif' alt=''></button>";
                 echo "</a>";
 
-                // Botón Eliminar Cliente (Eliminar.gif)
+                // Botón Eliminar Categoría (Eliminar.gif)
                 echo "<form method='post'>";
-                echo "<input type='hidden' name='cedula_cliente' value='" . $row['Cedula_Cliente'] . "'>";
-                echo "<button type='submit' name='eliminar_cliente'><img src='assets/img/Eliminar.gif' alt=''></button>";
+                echo "<input type='hidden' name='id_categoria' value='" . $row['ID_Categoria'] . "'>";
+                echo "<button type='submit' name='eliminar_categoria'><img src='assets/img/Eliminar.gif' alt=''></button>";
                 echo "</form>";
-
 
                 echo "</td>";
                 echo "</tr>";

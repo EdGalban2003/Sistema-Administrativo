@@ -102,15 +102,8 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Categorias` (
   `ID_Categoria` INT NOT NULL AUTO_INCREMENT,
   `Nombre_Categoria` VARCHAR(45) NOT NULL,
   `Detalle_Categoria` VARCHAR(45) NOT NULL,
-  `Productos_ID_Producto` INT NOT NULL,
-  PRIMARY KEY (`ID_Categoria`, `Productos_ID_Producto`),
-  INDEX `fk_Categorias_Productos1_idx` (`Productos_ID_Producto` ASC) ,
-  UNIQUE INDEX `Nombre_Categoria_UNIQUE` (`Nombre_Categoria` ASC) ,
-  CONSTRAINT `fk_Categorias_Productos1`
-    FOREIGN KEY (`Productos_ID_Producto`)
-    REFERENCES `Sistema_Administrativo`.`Productos` (`ID_Producto`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  PRIMARY KEY (`ID_Categoria`),
+  UNIQUE INDEX `Nombre_Categoria_UNIQUE` (`Nombre_Categoria` ASC) )
 ENGINE = InnoDB;
 
 
@@ -376,28 +369,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Sistema_Administrativo`.`Sesiones`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Sesiones` (
-  `ID_Sesiones` INT NOT NULL,
-  `ID_Usuario` VARCHAR(45) NULL,
-  `Token_Sesion` VARCHAR(255) NULL,
-  `Fecha_Inicio` DATE NULL,
-  `Hora_Inicio` TIME NULL,
-  `Direccion_IP` VARCHAR(45) NULL,
-  `Usuarios_ID_Usuario` INT NOT NULL,
-  PRIMARY KEY (`ID_Sesiones`, `Usuarios_ID_Usuario`),
-  UNIQUE INDEX `ID_Usuario_UNIQUE` (`ID_Usuario` ASC) ,
-  INDEX `fk_Sesiones_Usuarios1_idx` (`Usuarios_ID_Usuario` ASC) ,
-  CONSTRAINT `fk_Sesiones_Usuarios1`
-    FOREIGN KEY (`Usuarios_ID_Usuario`)
-    REFERENCES `Sistema_Administrativo`.`Usuarios` (`ID_Usuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `Sistema_Administrativo`.`Usuarios_Temporales`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Usuarios_Temporales` (
@@ -405,6 +376,28 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Usuarios_Temporales` (
   `Nombre_Usuario` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`ID_UsuariosTemporales`),
   UNIQUE INDEX `Nombre_Usuario_UNIQUE` (`Nombre_Usuario` ASC) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Sistema_Administrativo`.`Productos_has_Categorias`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Productos_has_Categorias` (
+  `Productos_ID_Producto` INT NOT NULL,
+  `Categorias_ID_Categoria` INT NOT NULL,
+  PRIMARY KEY (`Productos_ID_Producto`, `Categorias_ID_Categoria`),
+  INDEX `fk_Productos_has_Categorias_Categorias1_idx` (`Categorias_ID_Categoria` ASC) ,
+  INDEX `fk_Productos_has_Categorias_Productos1_idx` (`Productos_ID_Producto` ASC) ,
+  CONSTRAINT `fk_Productos_has_Categorias_Productos1`
+    FOREIGN KEY (`Productos_ID_Producto`)
+    REFERENCES `Sistema_Administrativo`.`Productos` (`ID_Producto`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Productos_has_Categorias_Categorias1`
+    FOREIGN KEY (`Categorias_ID_Categoria`)
+    REFERENCES `Sistema_Administrativo`.`Categorias` (`ID_Categoria`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 

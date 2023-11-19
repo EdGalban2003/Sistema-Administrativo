@@ -3,7 +3,7 @@
 
 $db_config = array(
     'host' => "localhost",
-    'username' => "edgalban2",
+    'username' => "",
     'database' => "sistema_administrativo"
 );
 ?>
