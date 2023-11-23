@@ -84,57 +84,54 @@
     
 
     <?php
-    // Incluye el archivo de configuración
-    require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
+// Incluye el archivo de configuración
+require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
-    // Iniciar sesión o reanudar la sesión existente
-    session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
-    session_start();
+// Configurar la ubicación personalizada para los archivos de sesión
+session_save_path(__DIR__ . '/../_ConexionBDDSA/Sesiones/');
+session_start();
 
-    // Verificar si el usuario ya ha iniciado sesión
-    if (!empty($_SESSION['nombre_usuario'])) {
-        $nombre_usuario = $_SESSION['nombre_usuario'];
-    } 
+// Verificar si el usuario ya ha iniciado sesión
+if (!empty($_SESSION['nombre_usuario'])) {
+    $nombre_usuario = $_SESSION['nombre_usuario'];
+} 
 
-    try {
-        // Intenta la conexión con la base de datos después de actualizar el archivo config.php
-        $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
-    } catch (mysqli_sql_exception $e) {
-        // Muestra un mensaje personalizado en caso de un error de acceso
-        echo "<h2>Acceso Denegado</h2>";
-        exit;
-    }
+try {
+    // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+    $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+} catch (mysqli_sql_exception $e) {
+    // Muestra un mensaje personalizado en caso de un error de acceso
+    echo "<h2>Acceso Denegado</h2>";
+    exit;
+}
 
-    // Realizar la consulta a la base de datos con la opción de búsqueda
-    $search_query = isset($_GET['q']) ? $_GET['q'] : '';
-    $query = "SELECT * FROM Cliente WHERE 
-              Cedula_Cliente LIKE '%$search_query%' OR 
-              Nombre_Cliente LIKE '%$search_query%' OR 
-              Apellido_Cliente LIKE '%$search_query%' OR 
-              Telefono_Cliente LIKE '%$search_query%' OR 
-              Direccion_Cliente LIKE '%$search_query%'";
+// Realizar la consulta a la base de datos con la opción de búsqueda en la tabla "Auditoria"
+$search_query = isset($_GET['q']) ? $_GET['q'] : '';
+$query = "SELECT * FROM Auditoria WHERE 
+          Usuario LIKE '%$search_query%' OR 
+          Descripcion_Accion LIKE '%$search_query%' OR 
+          Detalles_Adicionales LIKE '%$search_query%'OR
+          Fecha_Accion LIKE '%$search_query%' OR
+          Hora_Accion LIKE '%$search_query%'";
 
-    $result = $conn->query($query);
-    ?>
+$result = $conn->query($query);
+?>
 
-    <div class="funciones">
-        <button type="submit"><img src="assets/img/Añadir 2.gif" alt=""></button>
-        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/1_Añadir_Cliente.php">Añadir Cliente</a>
-        <button type="submit"><img src="assets/img/Añadir.gif" alt=""></button>
-    </div>
+<div class="funciones">
+    <!-- Puedes añadir funciones relacionadas con la tabla "Auditoria" aquí si es necesario -->
+</div>
 </div>
 
 <div class="container">
     <table>
         <thead>
             <tr>
-                <th>ID Cliente</th>
-                <th>Cédula</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
-                <th>Modificar/Eliminar</th>
+                <th>ID Auditoria</th>
+                <th>Fecha Accion</th>
+                <th>Hora Accion</th>
+                <th>Usuario</th>
+                <th>Descripcion Accion</th>
+                <th>Detalles Adicionales</th>
             </tr>
         </thead>
         <tbody>
@@ -142,26 +139,12 @@
             // Mostrar datos en la tabla
             while ($row = $result->fetch_assoc()) {
                 echo "<tr>";
-                echo "<td>" . $row['ID_Cliente'] . "</td>";
-                echo "<td>" . $row['Cedula_Cliente'] . "</td>";
-                echo "<td>" . $row['Nombre_Cliente'] . "</td>";
-                echo "<td>" . $row['Apellido_Cliente'] . "</td>";
-                echo "<td>" . $row['Telefono_Cliente'] . "</td>";
-                echo "<td>" . $row['Direccion_Cliente'] . "</td>";
-                echo "<td>";
-
-                // Botón Modificar Cliente (Ayuda.gif)
-                echo "<a href='/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/2_Modificar_Cliente.php?cedula=" . $row['Cedula_Cliente'] . "'>";
-                echo "<button><img src='assets/img/Editar.gif' alt=''></button>";
-                echo "</a>";
-
-                // Botón Eliminar Cliente (Eliminar.gif)
-                echo "<form method='post'>";
-                echo "<input type='hidden' name='cedula_cliente' value='" . $row['Cedula_Cliente'] . "'>";
-                echo "<button type='submit' name='eliminar_cliente'><img src='assets/img/Eliminar.gif' alt=''></button>";
-                echo "</form>";
-
-                echo "</td>";
+                echo "<td>" . $row['ID_Auditoria'] . "</td>";
+                echo "<td>" . $row['Fecha_Accion'] . "</td>";
+                echo "<td>" . $row['Hora_Accion'] . "</td>";
+                echo "<td>" . $row['Usuario'] . "</td>";
+                echo "<td>" . $row['Descripcion_Accion'] . "</td>";
+                echo "<td>" . $row['Detalles_Adicionales'] . "</td>";
                 echo "</tr>";
             }
             ?>

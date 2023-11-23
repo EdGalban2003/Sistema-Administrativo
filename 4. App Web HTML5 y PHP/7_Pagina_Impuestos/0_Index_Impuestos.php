@@ -1,3 +1,73 @@
+<?php
+    // Incluye el archivo de configuración
+    require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
+
+    // Configurar la ubicación personalizada para los archivos de sesión
+    session_save_path(__DIR__ . '/../_ConexionBDDSA/Sesiones/');
+    session_start();
+
+    // Verificar si el usuario ya ha iniciado sesión
+    if (!empty($_SESSION['nombre_usuario'])) {
+        $nombre_usuario = $_SESSION['nombre_usuario'];
+    } else {
+        // Si no hay un usuario en la sesión, redirige o realiza alguna acción adecuada
+        echo "<h2>Acceso Denegado</h2>";
+        exit;
+    }
+
+    // Inicializar la variable de conexión fuera del bloque try-catch
+    $conn = null;
+
+    try {
+        // Intenta la conexión con la base de datos después de actualizar el archivo config.php
+        $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
+    } catch (mysqli_sql_exception $e) {
+        // Muestra un mensaje personalizado en caso de un error de acceso
+        echo "<h2>Acceso Denegado</h2>";
+        exit;
+    }
+
+    // Realizar la eliminación directamente en la misma página si se ha enviado el formulario
+    if (isset($_POST['eliminar_impuesto'])) {
+        $id_impuesto = $_POST['id_impuesto'];
+
+        // Preparar la consulta de eliminación
+        $query = "DELETE FROM Impuestos WHERE ID_Impuestos = ?";
+        $stmt = $conn->prepare($query);
+
+        if (!$stmt) {
+            // Manejar el error de preparación
+            echo "Error al preparar la consulta: " . $conn->error;
+        } else {
+            $stmt->bind_param("s", $id_impuesto);
+
+            // Ejecutar la eliminación
+            if ($stmt->execute()) {
+                // Redirigir a otra página después de la eliminación
+                header("/Sistema-Administrativo/4. App Web HTML5 y PHP/7_Pagina_Impuestos/0_Index_Impuestos.php");
+                exit(); 
+            } else {
+                echo "Error al eliminar el impuesto: " . $stmt->error;
+            }
+
+            // Cerrar la declaración preparada
+            $stmt->close();
+        }
+    }
+
+    // Realizar la consulta a la base de datos con la opción de búsqueda para la tabla de Impuestos
+    $search_query = isset($_GET['q']) ? $_GET['q'] : '';
+    $query = "SELECT * FROM Impuestos WHERE 
+              ID_Impuestos LIKE '%$search_query%' OR 
+              Nombre_Impuesto LIKE '%$search_query%' OR 
+              Tasa_Impuesto LIKE '%$search_query%' OR 
+              Descripcion_Impuesto LIKE '%$search_query%'";
+
+    $result = $conn->query($query);
+    ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,51 +87,52 @@
         <li class="submenu">
           <a href="#">Catálogos</a>
           <ul class="hijos">
-          <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/0_Index_Cliente.php">Clientes</a></li>
-            <li><a href="">Proveedores</a></li>
-            <li><a href="">Productos</a></li>
+          <li ><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/0_Index_Cliente.php">Clientes</a></li>
+            <li class="link"><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/3_Pagina_Proveedores/0_Index_Proveedores.php">Proveedores</a></li>
+            <li ><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/4_Pagina_Productos/0_Index_Productos.php">Productos</a></li>
+            <li ><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/5_Pagina_Categorias/0_Index_Categorias.php">Categorias</a></li>
+            <li ><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/7_Pagina_Impuestos/0_Index_Impuestos.php">Impuestos</a></li>
           </ul>
         </li>    
         <li class="submenu">
           <a href="">Movimientos</a>
           <ul class="hijos">
-            <li><a href="">Recibo</a></li>
-            <li><a href="">Cierre de Caja</a></li>
-            <li><a href="">Inventario</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/6_Pagina_Recibos/0_Index_Recibos.php">Recibo</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/8_Pagina_CierreDeCaja/0_Index_CierreCaja.php">Cierre de Caja</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/8.1_Inventario
+              /0_Index_CierreCaja.php">Inventario</a></li>
           </ul>
         </li>
         <li class="submenu">
           <a href="">Reportes</a>
           <ul class="hijos">
-            <li><a href="">Clientes</a></li>
-            <li><a href="">Proveedores</a></li>
-            <li><a href="">Productos</a></li>
-            <li><a href="">Auditoria</a></li>
-            <li><a href="">Cierre de Caja</a></li>
-            <li><a href="">Reimprimir Recibo</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/14_Pagina_Reportes/0_Index_Cliente.php">Clientes</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/14_Pagina_Reportes/1_Index_Proveedores.php">Proveedores</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/14_Pagina_Reportes/2_Index_Productos.php">Productos</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/14_Pagina_Reportes/3_Index_Auditoria.php">Auditoria</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/14_Pagina_Reportes/4_Index_CierreCaja.php">Cierre de Caja</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/14_Pagina_Reportes/5_Index_Reimprimir.php">Reimprimir Recibo</a></li>
           </ul>
         </li>
         <li class="submenu">
           <a href="">Mantenimiento</a>
           <ul class="hijos">
-            <li><a href="">Auditoria</a></li>
-            <li><a href="">Respaldar</a></li>
-            <li><a href="">Restaurar</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/9_Pagina_Auditoria/0_Index_Auditoria.php">Auditoria</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/12_Pagina_Mantenimiento/0_Index_Respaldar.html">Respaldar</a></li>
           </ul>
         </li>
         <li class="submenu">
           <a href="">Ayuda</a>
           <ul class="hijos">
-            <li><a href="">Acerca de</a></li>
-            <li><a href="">Manual de Usuario</a></li>
-            <li><a href="">Información de Sistema</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/11_Pagina_AcercaDe/0_Index_AcercaDe.html">Acerca de</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/10_Pagina_Manual/0_Index_Manual.php">Manual de Usuario</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/15_Pagina_InfoSistema/0_Index_AcercaDe.html">Información de Sistema</a></li>
           </ul>
         </li>
         <li class="submenu">
           <a href="">Configuración</a>
           <ul class="hijos">
-            <li><a href="">Notificaciones</a></li>
-            <li><a href="">Configuración General</a></li>
+            <li><a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/13_Pagina_Configuracion/0_Index_Configuracion.html">Información del Negocio</a></li>
           </ul>
         </li>
         <li class="submenu">
@@ -82,83 +153,46 @@
         <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
     </form>
     
-
-    <?php
-    // Incluye el archivo de configuración
-    require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
-
-    // Iniciar sesión o reanudar la sesión existente
-    session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
-    session_start();
-
-    // Verificar si el usuario ya ha iniciado sesión
-    if (!empty($_SESSION['nombre_usuario'])) {
-        $nombre_usuario = $_SESSION['nombre_usuario'];
-    } 
-
-    try {
-        // Intenta la conexión con la base de datos después de actualizar el archivo config.php
-        $conn = new mysqli($db_config['host'], $nombre_usuario, '', $db_config['database']);
-    } catch (mysqli_sql_exception $e) {
-        // Muestra un mensaje personalizado en caso de un error de acceso
-        echo "<h2>Acceso Denegado</h2>";
-        exit;
-    }
-
-    // Realizar la consulta a la base de datos con la opción de búsqueda
-    $search_query = isset($_GET['q']) ? $_GET['q'] : '';
-    $query = "SELECT * FROM Cliente WHERE 
-              Cedula_Cliente LIKE '%$search_query%' OR 
-              Nombre_Cliente LIKE '%$search_query%' OR 
-              Apellido_Cliente LIKE '%$search_query%' OR 
-              Telefono_Cliente LIKE '%$search_query%' OR 
-              Direccion_Cliente LIKE '%$search_query%'";
-
-    $result = $conn->query($query);
-    ?>
+    
 
     <div class="funciones">
         <button type="submit"><img src="assets/img/Añadir 2.gif" alt=""></button>
-        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/1_Añadir_Cliente.php">Añadir Cliente</a>
+        <a href="/Sistema-Administrativo/4. App Web HTML5 y PHP/7_Pagina_Impuestos/1_Añadir_Impuestos.php">Añadir Impuesto</a>
         <button type="submit"><img src="assets/img/Añadir.gif" alt=""></button>
     </div>
-</div>
+  </div>
 
-<div class="container">
+  <div class="container">
     <table>
         <thead>
             <tr>
-                <th>ID Cliente</th>
-                <th>Cédula</th>
+                <th>ID Impuesto</th>
                 <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
+                <th>Tasa</th>
+                <th>Descripción</th>
                 <th>Modificar/Eliminar</th>
             </tr>
         </thead>
         <tbody>
             <?php
-            // Mostrar datos en la tabla
+            // Mostrar datos en la tabla de Impuestos
             while ($row = $result->fetch_assoc()) {
                 echo "<tr>";
-                echo "<td>" . $row['ID_Cliente'] . "</td>";
-                echo "<td>" . $row['Cedula_Cliente'] . "</td>";
-                echo "<td>" . $row['Nombre_Cliente'] . "</td>";
-                echo "<td>" . $row['Apellido_Cliente'] . "</td>";
-                echo "<td>" . $row['Telefono_Cliente'] . "</td>";
-                echo "<td>" . $row['Direccion_Cliente'] . "</td>";
+                echo "<td>" . $row['ID_Impuestos'] . "</td>";
+                echo "<td>" . $row['Nombre_Impuesto'] . "</td>";
+                echo "<td>" . $row['Tasa_Impuesto'] . "</td>";
+                echo "<td>" . $row['Descripcion_Impuesto'] . "</td>";
                 echo "<td>";
 
-                // Botón Modificar Cliente (Ayuda.gif)
-                echo "<a href='/Sistema-Administrativo/4. App Web HTML5 y PHP/2_Pagina_Clientes/2_Modificar_Cliente.php?cedula=" . $row['Cedula_Cliente'] . "'>";
+               // Botón Modificar Impuesto (Ayuda.gif)
+                echo "<a href='/Sistema-Administrativo/4. App Web HTML5 y PHP/7_Pagina_Impuestos/2_Modificar_Impuestos.php?nombre_impuesto=" . urlencode($row['Nombre_Impuesto']) . "'>";
                 echo "<button><img src='assets/img/Editar.gif' alt=''></button>";
                 echo "</a>";
 
-                // Botón Eliminar Cliente (Eliminar.gif)
+                // Botón Eliminar Impuesto (Eliminar.gif)
                 echo "<form method='post'>";
-                echo "<input type='hidden' name='cedula_cliente' value='" . $row['Cedula_Cliente'] . "'>";
-                echo "<button type='submit' name='eliminar_cliente'><img src='assets/img/Eliminar.gif' alt=''></button>";
+                echo "<input type='hidden' name='id_impuesto' value='" . $row['ID_Impuestos'] . "'>";
+                echo "<button type='submit' name='eliminar_impuesto'><img src='assets/img/Eliminar.gif' alt=''></button>";
                 echo "</form>";
 
                 echo "</td>";
@@ -167,7 +201,6 @@
             ?>
         </tbody>
     </table>
-</div>
-  
+  </div>
 </body>
 </html>

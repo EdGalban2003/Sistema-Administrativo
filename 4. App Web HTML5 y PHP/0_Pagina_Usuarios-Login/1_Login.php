@@ -2,7 +2,7 @@
 require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
 // Configurar la ubicación personalizada para los archivos de sesión
-session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
+session_save_path(__DIR__ . '/../_ConexionBDDSA/Sesiones/');
 session_start();
 
 // Inicializar la variable de intentos fallidos

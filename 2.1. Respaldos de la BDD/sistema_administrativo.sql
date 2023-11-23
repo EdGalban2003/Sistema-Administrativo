@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-11-2023 a las 23:02:18
+-- Tiempo de generación: 22-11-2023 a las 04:52:20
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -45,8 +45,7 @@ CREATE TABLE `auditoria` (
 CREATE TABLE `categorias` (
   `ID_Categoria` int(11) NOT NULL,
   `Nombre_Categoria` varchar(45) NOT NULL,
-  `Detalle_Categoria` varchar(45) NOT NULL,
-  `Productos_ID_Producto` int(11) NOT NULL
+  `Detalle_Categoria` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -195,6 +194,17 @@ CREATE TABLE `productos` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `productos_has_categorias`
+--
+
+CREATE TABLE `productos_has_categorias` (
+  `Productos_ID_Producto` int(11) NOT NULL,
+  `Categorias_ID_Categoria` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `productos_has_impuestos`
 --
 
@@ -282,22 +292,6 @@ CREATE TABLE `recibos_has_impuestos` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `sesiones`
---
-
-CREATE TABLE `sesiones` (
-  `ID_Sesiones` int(11) NOT NULL,
-  `ID_Usuario` varchar(45) DEFAULT NULL,
-  `Token_Sesion` varchar(255) DEFAULT NULL,
-  `Fecha_Inicio` date DEFAULT NULL,
-  `Hora_Inicio` time DEFAULT NULL,
-  `Direccion_IP` varchar(45) DEFAULT NULL,
-  `Usuarios_ID_Usuario` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -347,9 +341,8 @@ ALTER TABLE `auditoria`
 -- Indices de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  ADD PRIMARY KEY (`ID_Categoria`,`Productos_ID_Producto`),
-  ADD UNIQUE KEY `Nombre_Categoria_UNIQUE` (`Nombre_Categoria`),
-  ADD KEY `fk_Categorias_Productos1_idx` (`Productos_ID_Producto`);
+  ADD PRIMARY KEY (`ID_Categoria`),
+  ADD UNIQUE KEY `Nombre_Categoria_UNIQUE` (`Nombre_Categoria`);
 
 --
 -- Indices de la tabla `cierrecaja`
@@ -383,8 +376,7 @@ ALTER TABLE `forma_de_pago`
 -- Indices de la tabla `impuestos`
 --
 ALTER TABLE `impuestos`
-  ADD PRIMARY KEY (`ID_Impuestos`),
-  ADD UNIQUE KEY `Nombre_Impuesto_UNIQUE` (`Nombre_Impuesto`);
+  ADD PRIMARY KEY (`ID_Impuestos`);
 
 --
 -- Indices de la tabla `informacion_negocio`
@@ -413,6 +405,14 @@ ALTER TABLE `manual`
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`ID_Producto`),
   ADD UNIQUE KEY `Codigo_Producto_UNIQUE` (`Codigo_Producto`);
+
+--
+-- Indices de la tabla `productos_has_categorias`
+--
+ALTER TABLE `productos_has_categorias`
+  ADD PRIMARY KEY (`Productos_ID_Producto`,`Categorias_ID_Categoria`),
+  ADD KEY `fk_Productos_has_Categorias_Categorias1_idx` (`Categorias_ID_Categoria`),
+  ADD KEY `fk_Productos_has_Categorias_Productos1_idx` (`Productos_ID_Producto`);
 
 --
 -- Indices de la tabla `productos_has_impuestos`
@@ -468,14 +468,6 @@ ALTER TABLE `recibos_has_impuestos`
   ADD PRIMARY KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`,`Impuestos_ID_Impuestos`),
   ADD KEY `fk_Recibos_has_Impuestos_Impuestos1_idx` (`Impuestos_ID_Impuestos`),
   ADD KEY `fk_Recibos_has_Impuestos_Recibos1_idx` (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`);
-
---
--- Indices de la tabla `sesiones`
---
-ALTER TABLE `sesiones`
-  ADD PRIMARY KEY (`ID_Sesiones`,`Usuarios_ID_Usuario`),
-  ADD UNIQUE KEY `ID_Usuario_UNIQUE` (`ID_Usuario`),
-  ADD KEY `fk_Sesiones_Usuarios1_idx` (`Usuarios_ID_Usuario`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -584,17 +576,18 @@ ALTER TABLE `usuarios_temporales`
 --
 
 --
--- Filtros para la tabla `categorias`
---
-ALTER TABLE `categorias`
-  ADD CONSTRAINT `fk_Categorias_Productos1` FOREIGN KEY (`Productos_ID_Producto`) REFERENCES `productos` (`ID_Producto`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
 -- Filtros para la tabla `detalle_recibos`
 --
 ALTER TABLE `detalle_recibos`
   ADD CONSTRAINT `fk_Detalle_Factura_Productos1` FOREIGN KEY (`Productos_ID_Producto`) REFERENCES `productos` (`ID_Producto`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Detalle_Factura_Recibos1` FOREIGN KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`) REFERENCES `recibos` (`ID_Recibo`, `Cliente_ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `productos_has_categorias`
+--
+ALTER TABLE `productos_has_categorias`
+  ADD CONSTRAINT `fk_Productos_has_Categorias_Categorias1` FOREIGN KEY (`Categorias_ID_Categoria`) REFERENCES `categorias` (`ID_Categoria`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Productos_has_Categorias_Productos1` FOREIGN KEY (`Productos_ID_Producto`) REFERENCES `productos` (`ID_Producto`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `productos_has_impuestos`
@@ -636,12 +629,6 @@ ALTER TABLE `recibos_has_forma_de_pago`
 ALTER TABLE `recibos_has_impuestos`
   ADD CONSTRAINT `fk_Recibos_has_Impuestos_Impuestos1` FOREIGN KEY (`Impuestos_ID_Impuestos`) REFERENCES `impuestos` (`ID_Impuestos`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Recibos_has_Impuestos_Recibos1` FOREIGN KEY (`Recibos_ID_Recibo`,`Recibos_Cliente_ID_Cliente`) REFERENCES `recibos` (`ID_Recibo`, `Cliente_ID_Cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Filtros para la tabla `sesiones`
---
-ALTER TABLE `sesiones`
-  ADD CONSTRAINT `fk_Sesiones_Usuarios1` FOREIGN KEY (`Usuarios_ID_Usuario`) REFERENCES `usuarios` (`ID_Usuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

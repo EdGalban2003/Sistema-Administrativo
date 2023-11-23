@@ -2,8 +2,8 @@
 // Incluye el archivo de configuración
 require_once(__DIR__ . '/../_ConexionBDDSA/config.php');
 
-// Iniciar sesión o reanudar la sesión existente
-session_save_path('G:\Repositorios Github\Sistema-Administrativo\4. App Web HTML5 y PHP\_ConexionBDDSA\Sesiones');
+// Configurar la ubicación personalizada para los archivos de sesión
+session_save_path(__DIR__ . '/../_ConexionBDDSA/Sesiones/');
 session_start();
 
 // Verificar si el usuario ya ha iniciado sesión

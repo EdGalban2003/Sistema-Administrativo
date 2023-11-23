@@ -58,9 +58,6 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Productos` (
   `Cantidad_Producto` INT(11) NOT NULL,
   `Precio_Venta` DECIMAL(10,2) NOT NULL,
   `Precio_Costo` DECIMAL(10,2) NOT NULL,
-  `Fecha_Ingreso` DATE NOT NULL,
-  `Descuento` DECIMAL(10,2) NULL,
-  `Promocion` DECIMAL(10,2) NULL,
   PRIMARY KEY (`ID_Producto`),
   UNIQUE INDEX `Codigo_Producto_UNIQUE` (`Codigo_Producto` ASC) )
 ENGINE = InnoDB;
@@ -236,8 +233,7 @@ CREATE TABLE IF NOT EXISTS `Sistema_Administrativo`.`Impuestos` (
   `Nombre_Impuesto` VARCHAR(45) NOT NULL,
   `Tasa_Impuesto` DECIMAL(10,2) NOT NULL,
   `Descripcion_Impuesto` TEXT NULL,
-  PRIMARY KEY (`ID_Impuestos`),
-  UNIQUE INDEX `Nombre_Impuesto_UNIQUE` (`Nombre_Impuesto` ASC) )
+  PRIMARY KEY (`ID_Impuestos`))
 ENGINE = InnoDB;
 
 
